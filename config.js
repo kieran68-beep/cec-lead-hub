@@ -13,7 +13,7 @@ const CEC_CONFIG = {
 
   // The Google Apps Script Web App URL (you get this after deploying your script)
   // Replace the placeholder below with your actual deployed URL
-  APPS_SCRIPT_URL: https://script.google.com/macros/s/AKfycbwv1AJ7-BONJfnBnzNRUfpNhlSJW3jPrjGnc4ZG09IQ-oFeBKCjTj8426YKy3or1hej3g/exec,
+  APPS_SCRIPT_URL: https://script.google.com/macros/s/AKfycbxILnESysGAG2UUwVCNgVjhKlhINSCMIW-2UlBuTBq2jCKeSZG9i0e3UxrW4j5YmIoXLA/exec
 
   // ----------------------------------------------------------
   //  TOOL LINKS
