@@ -920,7 +920,7 @@ async function loadLeads() {
   }
 
   try {
-    const resp = await fetch(url);
+const resp = await fetch(url, { redirect: 'follow' });
     const data = await resp.json();
 
     if (data.error) throw new Error(data.error);
