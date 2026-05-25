@@ -1,0 +1,2004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CEC Lead Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="config.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --teal:       #0f6e56;
+      --teal-light: #e1f5ee;
+      --teal-mid:   #1d9e75;
+      --teal-dark:  #085041;
+      --amber:      #ba7517;
+      --amber-light:#faeeda;
+      --red:        #a32d2d;
+      --red-light:  #fcebeb;
+      --gray-50:    #f8f8f7;
+      --gray-100:   #f0efeb;
+      --gray-200:   #e0dfd9;
+      --gray-400:   #9a9990;
+      --gray-600:   #5f5e5a;
+      --gray-800:   #2c2c2a;
+      --white:      #ffffff;
+      --font:       'DM Sans', sans-serif;
+      --mono:       'DM Mono', monospace;
+      --radius:     10px;
+      --radius-lg:  16px;
+      --shadow:     0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+      --shadow-md:  0 4px 12px rgba(0,0,0,.10);
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--gray-50);
+      color: var(--gray-800);
+      font-size: 15px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── TOP BAR ────────────────────────────────── */
+    .topbar {
+      background: var(--teal-dark);
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      height: 56px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .topbar-logo {
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255,255,255,.5);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .topbar-title {
+      font-size: 15px;
+      font-weight: 500;
+      color: white;
+    }
+    .topbar-sep { flex: 1; }
+    .topbar-link {
+      font-size: 13px;
+      color: rgba(255,255,255,.7);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: color .15s;
+    }
+    .topbar-link:hover { color: white; }
+
+    /* ── PAGE WRAPPER ───────────────────────────── */
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* ── HOMEPAGE ───────────────────────────────── */
+    .home-wrap { max-width: 860px; margin: 0 auto; padding: 36px 24px 80px; }
+
+    .home-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .home-header h1 { font-size: 26px; font-weight: 600; }
+    .home-header p  { color: var(--gray-600); font-size: 14px; margin-top: 4px; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 18px;
+      border-radius: var(--radius);
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all .15s;
+      border: none;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: var(--teal);
+      color: white;
+    }
+    .btn-primary:hover { background: var(--teal-dark); }
+    .btn-secondary {
+      background: white;
+      color: var(--gray-800);
+      border: 1px solid var(--gray-200);
+      box-shadow: var(--shadow);
+    }
+    .btn-secondary:hover { background: var(--gray-50); border-color: var(--gray-400); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--gray-600);
+      border: 1px solid var(--gray-200);
+    }
+    .btn-ghost:hover { color: var(--gray-800); background: var(--gray-100); }
+    .btn-teal-outline {
+      background: transparent;
+      color: var(--teal);
+      border: 1.5px solid var(--teal-mid);
+    }
+    .btn-teal-outline:hover { background: var(--teal-light); }
+
+    /* Lead list */
+    .leads-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--gray-200);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+    .leads-card-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--gray-100);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .leads-card-header h2 { font-size: 15px; font-weight: 600; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 9px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .badge-teal  { background: var(--teal-light); color: var(--teal-dark); }
+    .badge-amber { background: var(--amber-light); color: var(--amber); }
+    .badge-red   { background: var(--red-light);  color: var(--red);  }
+    .badge-gray  { background: var(--gray-100);   color: var(--gray-600); }
+
+    .leads-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .leads-table th {
+      text-align: left;
+      padding: 10px 20px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--gray-400);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      background: var(--gray-50);
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .leads-table td {
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--gray-100);
+      vertical-align: middle;
+    }
+    .leads-table tr:last-child td { border-bottom: none; }
+    .leads-table tr:hover td { background: var(--gray-50); cursor: pointer; }
+
+    .lead-name { font-weight: 500; }
+    .lead-date { color: var(--gray-400); font-family: var(--mono); font-size: 12px; }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .empty-state {
+      padding: 48px 20px;
+      text-align: center;
+      color: var(--gray-400);
+    }
+    .empty-state svg { opacity: .3; margin-bottom: 12px; }
+    .empty-state p { font-size: 14px; }
+
+    .loading-state {
+      padding: 32px 20px;
+      text-align: center;
+      color: var(--gray-400);
+      font-size: 14px;
+    }
+
+    .error-banner {
+      background: var(--red-light);
+      color: var(--red);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      font-size: 14px;
+      margin-bottom: 20px;
+      display: none;
+    }
+    .error-banner.visible { display: block; }
+
+    .home-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    /* Tool cards on homepage */
+    .tool-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 32px;
+    }
+    .tool-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--gray-200);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: box-shadow .15s, border-color .15s;
+      cursor: pointer;
+    }
+    .tool-card:hover { box-shadow: var(--shadow-md); border-color: var(--gray-400); }
+    .tool-card-icon {
+      width: 40px; height: 40px;
+      border-radius: var(--radius);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+    .tool-card-icon-teal { background: var(--teal-light); }
+    .tool-card-icon-amber { background: var(--amber-light); }
+    .tool-card h3 { font-size: 15px; font-weight: 600; }
+    .tool-card p  { font-size: 13px; color: var(--gray-600); line-height: 1.5; }
+    .tool-card-arrow { color: var(--gray-400); margin-top: auto; font-size: 13px; }
+
+    /* ── FORM / WIZARD ──────────────────────────── */
+    .form-wrap { max-width: 680px; margin: 0 auto; padding: 36px 24px 100px; }
+
+    .step-header { margin-bottom: 28px; }
+    .step-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--gray-600);
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+      font-family: var(--font);
+      margin-bottom: 16px;
+    }
+    .step-back:hover { color: var(--teal); }
+    .step-header h1 { font-size: 22px; font-weight: 600; }
+    .step-header p  { font-size: 14px; color: var(--gray-600); margin-top: 4px; }
+
+    /* Progress */
+    .progress-bar {
+      height: 3px;
+      background: var(--gray-200);
+      border-radius: 2px;
+      margin-bottom: 32px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--teal);
+      border-radius: 2px;
+      transition: width .3s ease;
+    }
+
+    /* Form fields */
+    .field { margin-bottom: 20px; }
+    .field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--gray-800);
+      margin-bottom: 6px;
+    }
+    .field label .opt {
+      font-weight: 400;
+      color: var(--gray-400);
+      font-size: 12px;
+    }
+    .field input[type=text],
+    .field input[type=date],
+    .field input[type=email],
+    .field input[type=tel],
+    .field input[type=number],
+    .field select,
+    .field textarea {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: var(--radius);
+      border: 1px solid var(--gray-200);
+      font-family: var(--font);
+      font-size: 14px;
+      color: var(--gray-800);
+      background: white;
+      transition: border-color .15s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    .field select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%239a9990' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 32px;
+    }
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      outline: none;
+      border-color: var(--teal-mid);
+      box-shadow: 0 0 0 3px rgba(29,158,117,.12);
+    }
+    .field textarea { resize: vertical; min-height: 80px; }
+
+    /* Multi-select chips */
+    .chip-group { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: 24px;
+      border: 1.5px solid var(--gray-200);
+      background: white;
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--gray-800);
+      cursor: pointer;
+      transition: all .15s;
+      user-select: none;
+    }
+    .chip:hover { border-color: var(--teal-mid); color: var(--teal); }
+    .chip.selected {
+      background: var(--teal-light);
+      border-color: var(--teal-mid);
+      color: var(--teal-dark);
+      font-weight: 500;
+    }
+    .chip .check { opacity: 0; font-size: 12px; }
+    .chip.selected .check { opacity: 1; }
+
+    /* Yes/No toggle */
+    .yesno-group { display: flex; gap: 10px; }
+    .yesno-btn {
+      flex: 1;
+      padding: 10px 0;
+      border-radius: var(--radius);
+      border: 1.5px solid var(--gray-200);
+      background: white;
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--gray-600);
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .yesno-btn:hover { border-color: var(--teal-mid); color: var(--teal); }
+    .yesno-btn.selected {
+      border-color: var(--teal-mid);
+      background: var(--teal-light);
+      color: var(--teal-dark);
+    }
+
+    /* Section card in wizard */
+    .section-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--gray-200);
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+    }
+    .section-card h3 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-number {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: var(--teal-light);
+      color: var(--teal-dark);
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .inline-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .hint {
+      font-size: 12px;
+      color: var(--gray-400);
+      margin-top: 4px;
+    }
+
+    .info-box {
+      background: var(--teal-light);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      font-size: 13px;
+      color: var(--teal-dark);
+      margin: 12px 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .warn-box {
+      background: var(--amber-light);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      font-size: 13px;
+      color: var(--amber);
+      margin: 12px 0;
+    }
+    .refer-box {
+      background: var(--red-light);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--red);
+      margin: 8px 0;
+      text-align: center;
+    }
+
+    /* Quote output */
+    .quote-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--gray-200);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .quote-header {
+      background: var(--teal-dark);
+      color: white;
+      padding: 18px 20px;
+    }
+    .quote-header h2 { font-size: 17px; font-weight: 600; }
+    .quote-header p  { font-size: 13px; opacity: .7; margin-top: 2px; }
+    .quote-body { padding: 0; }
+    .quote-service {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .quote-service:last-child { border-bottom: none; }
+    .quote-service-name { font-size: 13px; font-weight: 600; color: var(--gray-800); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .04em; }
+    .quote-line {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      padding: 2px 0;
+      color: var(--gray-600);
+    }
+    .quote-line.total {
+      font-weight: 600;
+      color: var(--gray-800);
+      border-top: 1px solid var(--gray-100);
+      margin-top: 6px;
+      padding-top: 8px;
+    }
+    .quote-total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      background: var(--teal-dark);
+      color: white;
+      font-size: 17px;
+      font-weight: 600;
+    }
+    .quote-disclaimer {
+      padding: 12px 20px;
+      font-size: 12px;
+      color: var(--gray-400);
+      background: var(--gray-50);
+      border-top: 1px solid var(--gray-100);
+      font-style: italic;
+    }
+    .quote-free-note {
+      font-size: 13px;
+      color: var(--teal);
+      background: var(--teal-light);
+      padding: 6px 10px;
+      border-radius: var(--radius);
+      margin-top: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Sticky footer */
+    .sticky-footer {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: white;
+      border-top: 1px solid var(--gray-200);
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      z-index: 50;
+    }
+    .sticky-footer-right { display: flex; gap: 10px; }
+
+    /* Success */
+    .success-wrap {
+      max-width: 480px;
+      margin: 80px auto;
+      text-align: center;
+      padding: 24px;
+    }
+    .success-icon {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: var(--teal-light);
+      color: var(--teal);
+      font-size: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+    }
+    .success-wrap h2 { font-size: 22px; font-weight: 600; margin-bottom: 8px; }
+    .success-wrap p  { color: var(--gray-600); font-size: 14px; margin-bottom: 24px; }
+
+    /* Spinner */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+      display: inline-block;
+    }
+    .spinner-teal {
+      border-color: var(--teal-light);
+      border-top-color: var(--teal);
+    }
+
+    /* Utility */
+    .mt-4  { margin-top: 4px; }
+    .mt-8  { margin-top: 8px; }
+    .mt-16 { margin-top: 16px; }
+    .mt-24 { margin-top: 24px; }
+    .text-sm { font-size: 13px; }
+    .text-muted { color: var(--gray-600); }
+    .divider { height: 1px; background: var(--gray-100); margin: 20px 0; }
+
+    @media (max-width: 600px) {
+      .inline-row { grid-template-columns: 1fr; }
+      .home-header { flex-direction: column; }
+      .topbar-link span { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── TOP BAR ───────────────────────────────────── -->
+<nav class="topbar">
+  <span class="topbar-logo">CEC</span>
+  <span class="topbar-title" id="topbar-title">Lead Hub</span>
+  <span class="topbar-sep"></span>
+  <a href="#" class="topbar-link" onclick="showPage('home'); return false;">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <span>Home</span>
+  </a>
+</nav>
+
+<!-- ════════════════════════════════════════════════
+     PAGE: HOME
+════════════════════════════════════════════════ -->
+<div id="page-home" class="page active">
+  <div class="home-wrap">
+
+    <div class="home-header">
+      <div>
+        <h1>Active Leads</h1>
+        <p>Leads that need follow-up or action</p>
+      </div>
+      <button class="btn btn-primary" onclick="showPage('capture')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New Lead
+      </button>
+    </div>
+
+    <div id="home-error" class="error-banner">
+      ⚠️ <span id="home-error-msg"></span> — leads will still save correctly.
+    </div>
+
+    <div class="leads-card">
+      <div class="leads-card-header">
+        <h2>Requires attention</h2>
+        <span class="badge badge-teal" id="leads-count">…</span>
+        <button class="btn btn-ghost" style="margin-left:auto; padding:5px 12px; font-size:12px;" onclick="loadLeads()">↺ Refresh</button>
+      </div>
+
+      <div id="leads-loading" class="loading-state">
+        <div class="spinner spinner-teal" style="display:inline-block; margin-right:8px;"></div>
+        Loading leads…
+      </div>
+
+      <div id="leads-container" style="display:none;">
+        <table class="leads-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Clean Type</th>
+              <th>Status</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="leads-tbody"></tbody>
+        </table>
+        <div id="leads-empty" class="empty-state" style="display:none;">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="9 12 12 15 15 9"/></svg>
+          <p>No active leads — all caught up! 🎉</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tools grid -->
+    <div style="margin-top:32px;">
+      <p class="text-sm text-muted" style="margin-bottom:12px; font-weight:500;">CEC Internal Tools</p>
+      <div class="tool-grid">
+        <div class="tool-card" onclick="showPage('capture')">
+          <div class="tool-card-icon tool-card-icon-teal">📋</div>
+          <h3>Lead Hub</h3>
+          <p>Capture new leads and generate quotes for clients</p>
+          <span class="tool-card-arrow">Open →</span>
+        </div>
+        <a class="tool-card" href="https://kieran68-beep.github.io/cec-coverage-checker/" target="_blank">
+          <div class="tool-card-icon tool-card-icon-amber">📍</div>
+          <h3>Coverage Checker</h3>
+          <p>Check if a client postcode falls within your service areas</p>
+          <span class="tool-card-arrow">Open ↗</span>
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════
+     PAGE: LEAD CAPTURE
+════════════════════════════════════════════════ -->
+<div id="page-capture" class="page">
+  <div class="form-wrap">
+
+    <div class="step-header">
+      <button class="step-back" onclick="showPage('home')">← Back to leads</button>
+      <div class="progress-bar"><div class="progress-fill" id="capture-progress" style="width:50%"></div></div>
+      <h1>New Lead</h1>
+      <p>Fill in the client details below</p>
+    </div>
+
+    <div class="section-card">
+
+      <div class="inline-row">
+        <div class="field">
+          <label>Date</label>
+          <input type="date" id="f-date" />
+        </div>
+        <div class="field">
+          <label>Lead Source</label>
+          <select id="f-source"></select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Clean Type <span class="opt">(select all that apply)</span></label>
+        <div class="chip-group" id="clean-type-chips"></div>
+      </div>
+
+      <div class="inline-row">
+        <div class="field">
+          <label>Client Name</label>
+          <input type="text" id="f-name" placeholder="Full name" />
+        </div>
+        <div class="field">
+          <label>Postcode</label>
+          <input type="text" id="f-postcode" placeholder="e.g. LU1 1AA" />
+        </div>
+      </div>
+
+      <div class="inline-row">
+        <div class="field">
+          <label>Contact Number</label>
+          <input type="tel" id="f-phone" placeholder="07700 000000" />
+        </div>
+        <div class="field">
+          <label>Email <span class="opt">(optional)</span></label>
+          <input type="email" id="f-email" placeholder="client@example.com" />
+        </div>
+      </div>
+
+      <div class="inline-row">
+        <div class="field">
+          <label>Status</label>
+          <select id="f-status"></select>
+        </div>
+        <div class="field">
+          <label>Chased Date <span class="opt">(optional)</span></label>
+          <input type="date" id="f-chased" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Notes <span class="opt">(optional)</span></label>
+        <textarea id="f-notes" placeholder="Any extra information…"></textarea>
+      </div>
+
+    </div>
+
+    <!-- Quote question -->
+    <div class="section-card" id="quote-question-card">
+      <h3 style="font-size:15px; margin-bottom:12px;">Does this lead require a quote?</h3>
+      <div class="yesno-group">
+        <button class="yesno-btn" id="quote-yes-btn" onclick="setQuoteNeeded(true)">✓ Yes, build a quote</button>
+        <button class="yesno-btn" id="quote-no-btn" onclick="setQuoteNeeded(false)">✕ No, submit now</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="sticky-footer">
+    <button class="btn btn-ghost" onclick="showPage('home')">Cancel</button>
+    <div class="sticky-footer-right">
+      <button class="btn btn-primary" id="capture-next-btn" onclick="handleCaptureNext()">
+        Continue →
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════
+     PAGE: QUOTING WIZARD
+════════════════════════════════════════════════ -->
+<div id="page-wizard" class="page">
+  <div class="form-wrap">
+    <div class="step-header">
+      <button class="step-back" id="wizard-back-btn" onclick="wizardBack()">← Back</button>
+      <div class="progress-bar"><div class="progress-fill" id="wizard-progress" style="width:0%"></div></div>
+      <h1 id="wizard-title">Quote Wizard</h1>
+      <p id="wizard-subtitle">Step through each selected service</p>
+    </div>
+    <div id="wizard-content"></div>
+  </div>
+
+  <div class="sticky-footer">
+    <button class="btn btn-ghost" id="wizard-cancel-btn" onclick="showPage('home')">Cancel</button>
+    <div class="sticky-footer-right">
+      <button class="btn btn-secondary" id="wizard-prev-btn" onclick="wizardBack()" style="display:none;">← Back</button>
+      <button class="btn btn-primary" id="wizard-next-btn" onclick="wizardNext()">Next →</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════
+     PAGE: QUOTE OUTPUT
+════════════════════════════════════════════════ -->
+<div id="page-quote" class="page">
+  <div class="form-wrap">
+    <div class="step-header">
+      <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+      <h1>Quote Summary</h1>
+      <p>Review the quote before submitting</p>
+    </div>
+    <div id="quote-output"></div>
+  </div>
+
+  <div class="sticky-footer">
+    <button class="btn btn-ghost" onclick="showPage('wizard')">← Edit Quote</button>
+    <div class="sticky-footer-right">
+      <button class="btn btn-primary" id="submit-btn" onclick="submitLead()">
+        Submit & Save
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════
+     PAGE: SUCCESS
+════════════════════════════════════════════════ -->
+<div id="page-success" class="page">
+  <div class="success-wrap">
+    <div class="success-icon">✓</div>
+    <h2>Lead saved!</h2>
+    <p id="success-msg">The lead has been added to Google Sheets.</p>
+    <button class="btn btn-primary" onclick="resetAndHome()" style="width:100%;">Back to leads list</button>
+  </div>
+</div>
+
+
+<script>
+// ════════════════════════════════════════════════
+//  APP STATE
+// ════════════════════════════════════════════════
+const state = {
+  quoteNeeded: null,
+  quoteNeededSet: false,
+  // Lead form data
+  lead: {},
+  // Wizard
+  services: [],       // selected clean types needing quotes
+  wizardStep: 0,
+  wizardAnswers: {},  // keyed by service id
+  quoteLines: {},     // computed quote breakdown per service
+};
+
+// ════════════════════════════════════════════════
+//  PAGE ROUTING
+// ════════════════════════════════════════════════
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  window.scrollTo(0, 0);
+
+  const titles = {
+    home: 'Lead Hub',
+    capture: 'New Lead',
+    wizard: 'Quote Wizard',
+    quote: 'Quote Summary',
+    success: 'Done'
+  };
+  document.getElementById('topbar-title').textContent = titles[id] || 'Lead Hub';
+
+  if (id === 'home') loadLeads();
+  if (id === 'capture') initCapturePage();
+  if (id === 'wizard') startWizard();
+}
+
+// ════════════════════════════════════════════════
+//  HOMEPAGE — LOAD LEADS
+// ════════════════════════════════════════════════
+function getStatusStyle(status) {
+  if (!status) return 'background:#f0efeb; color:#5f5e5a;';
+  const s = status.toLowerCase();
+  if (s === 'quoted')        return 'background:#e1f5ee; color:#085041;';
+  if (s === 'waiting reply') return 'background:#faeeda; color:#854f0b;';
+  if (s === 'chased')        return 'background:#faeeda; color:#ba7517;';
+  return 'background:#f0efeb; color:#5f5e5a;';
+}
+
+async function loadLeads() {
+  const container = document.getElementById('leads-container');
+  const loading   = document.getElementById('leads-loading');
+  const countBadge = document.getElementById('leads-count');
+  const errorBanner = document.getElementById('home-error');
+
+  container.style.display = 'none';
+  loading.style.display = 'block';
+  errorBanner.classList.remove('visible');
+
+  const url = CEC_CONFIG.APPS_SCRIPT_URL;
+  if (!url || url === 'YOUR_APPS_SCRIPT_URL_HERE') {
+    loading.style.display = 'none';
+    container.style.display = 'block';
+    document.getElementById('leads-empty').style.display = 'block';
+    document.getElementById('leads-tbody').innerHTML = '';
+    countBadge.textContent = '0';
+    document.getElementById('home-error-msg').textContent = 'Apps Script not yet configured — set APPS_SCRIPT_URL in config.js';
+    errorBanner.classList.add('visible');
+    return;
+  }
+
+  try {
+    const resp = await fetch(url);
+    const data = await resp.json();
+
+    if (data.error) throw new Error(data.error);
+
+    const closed   = CEC_CONFIG.CLOSED_STATUSES.map(s => s.toLowerCase());
+    const active   = (data.leads || []).filter(l => {
+      const status = (l['Status'] || '').toLowerCase();
+      return !closed.includes(status);
+    });
+
+    const tbody = document.getElementById('leads-tbody');
+    tbody.innerHTML = '';
+
+    if (active.length === 0) {
+      document.getElementById('leads-empty').style.display = 'block';
+    } else {
+      document.getElementById('leads-empty').style.display = 'none';
+      active.forEach(lead => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><span class="lead-name">${esc(lead.Name || '—')}</span></td>
+          <td>${esc(lead['Clean Type'] || '—')}</td>
+          <td><span class="status-pill" style="${getStatusStyle(lead.Status)}">${esc(lead.Status || '—')}</span></td>
+          <td><span class="lead-date">${esc(lead.Date || '—')}</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    countBadge.textContent = active.length;
+    loading.style.display = 'none';
+    container.style.display = 'block';
+
+  } catch(err) {
+    loading.style.display = 'none';
+    container.style.display = 'block';
+    document.getElementById('leads-empty').style.display = 'block';
+    document.getElementById('home-error-msg').textContent = 'Could not load leads: ' + err.message;
+    errorBanner.classList.add('visible');
+    countBadge.textContent = '0';
+  }
+}
+
+// ════════════════════════════════════════════════
+//  CAPTURE PAGE
+// ════════════════════════════════════════════════
+function initCapturePage() {
+  // Default date to today
+  const dateEl = document.getElementById('f-date');
+  if (!dateEl.value) {
+    dateEl.value = new Date().toISOString().split('T')[0];
+  }
+
+  // Populate dropdowns
+  const sourceEl = document.getElementById('f-source');
+  if (!sourceEl.querySelector('option')) {
+    sourceEl.innerHTML = CEC_CONFIG.LEAD_SOURCES.map(s => `<option>${s}</option>`).join('');
+  }
+  const statusEl = document.getElementById('f-status');
+  if (!statusEl.querySelector('option')) {
+    statusEl.innerHTML = CEC_CONFIG.ALL_STATUSES.map(s => `<option>${s}</option>`).join('');
+  }
+
+  // Clean type chips
+  const chips = document.getElementById('clean-type-chips');
+  if (!chips.querySelector('.chip')) {
+    chips.innerHTML = CEC_CONFIG.CLEAN_TYPES.map(ct =>
+      `<div class="chip" onclick="toggleChip(this,'${ct}')" data-value="${ct}">
+        <span class="check">✓</span> ${ct}
+      </div>`
+    ).join('');
+  }
+
+  // Reset quote question
+  state.quoteNeeded = null;
+  state.quoteNeededSet = false;
+  document.getElementById('quote-yes-btn').classList.remove('selected');
+  document.getElementById('quote-no-btn').classList.remove('selected');
+}
+
+function toggleChip(el, val) {
+  el.classList.toggle('selected');
+}
+
+function getSelectedChips() {
+  return [...document.querySelectorAll('#clean-type-chips .chip.selected')]
+    .map(c => c.dataset.value);
+}
+
+function setQuoteNeeded(val) {
+  state.quoteNeeded = val;
+  state.quoteNeededSet = true;
+  document.getElementById('quote-yes-btn').classList.toggle('selected', val === true);
+  document.getElementById('quote-no-btn').classList.toggle('selected', val === false);
+}
+
+function gatherLeadData() {
+  return {
+    Date:             document.getElementById('f-date').value,
+    'Lead Source':    document.getElementById('f-source').value,
+    'Clean Type':     getSelectedChips().join(', '),
+    Name:             document.getElementById('f-name').value,
+    Postcode:         document.getElementById('f-postcode').value,
+    'Contact Number': document.getElementById('f-phone').value,
+    Email:            document.getElementById('f-email').value,
+    Status:           document.getElementById('f-status').value,
+    'Chased Date':    document.getElementById('f-chased').value,
+    Notes:            document.getElementById('f-notes').value,
+    Quote:            ''
+  };
+}
+
+function validateCapture() {
+  const data = gatherLeadData();
+  if (!data.Name.trim()) { alert('Please enter the client name.'); return false; }
+  if (!data['Clean Type']) { alert('Please select at least one clean type.'); return false; }
+  if (!state.quoteNeededSet) { alert('Please choose whether this lead requires a quote.'); return false; }
+  return true;
+}
+
+function handleCaptureNext() {
+  if (!validateCapture()) return;
+  state.lead = gatherLeadData();
+
+  // Determine services that have a quoting wizard
+  const QUOTABLE = ['Oven', 'Carpets/Upholstery', 'Deep Clean', 'Pram/Car Seat'];
+  const selected = getSelectedChips();
+
+  if (state.quoteNeeded) {
+    // Filter to quotable services
+    state.services = selected.filter(s => QUOTABLE.includes(s));
+    state.wizardAnswers = {};
+    state.quoteLines = {};
+    state.wizardStep = 0;
+
+    if (state.services.length === 0) {
+      // No quotable services selected, just submit
+      submitLeadDirect();
+    } else {
+      showPage('wizard');
+    }
+  } else {
+    submitLeadDirect();
+  }
+}
+
+// ════════════════════════════════════════════════
+//  WIZARD ENGINE
+// ════════════════════════════════════════════════
+function startWizard() {
+  renderWizardStep();
+}
+
+function renderWizardStep() {
+  const service = state.services[state.wizardStep];
+  const total   = state.services.length;
+  const pct     = Math.round((state.wizardStep / total) * 100);
+  document.getElementById('wizard-progress').style.width = pct + '%';
+  document.getElementById('wizard-title').textContent = service;
+  document.getElementById('wizard-subtitle').textContent =
+    `Service ${state.wizardStep + 1} of ${total}`;
+
+  document.getElementById('wizard-prev-btn').style.display =
+    state.wizardStep > 0 ? 'inline-flex' : 'none';
+
+  const content = document.getElementById('wizard-content');
+  content.innerHTML = '';
+
+  if (service === 'Oven')              content.appendChild(buildOvenStep());
+  else if (service === 'Deep Clean')   content.appendChild(buildDeepCleanStep());
+  else if (service === 'Carpets/Upholstery') content.appendChild(buildCarpetsStep());
+  else if (service === 'Pram/Car Seat') content.appendChild(buildPramStep());
+}
+
+function wizardNext() {
+  const service = state.services[state.wizardStep];
+  const valid   = validateAndSaveStep(service);
+  if (!valid) return;
+
+  if (state.wizardStep < state.services.length - 1) {
+    state.wizardStep++;
+    renderWizardStep();
+    window.scrollTo(0, 0);
+  } else {
+    // All done — build quote output
+    buildQuoteOutput();
+    showPage('quote');
+  }
+}
+
+function wizardBack() {
+  if (state.wizardStep > 0) {
+    state.wizardStep--;
+    renderWizardStep();
+  } else {
+    showPage('capture');
+  }
+}
+
+// ════════════════════════════════════════════════
+//  STEP BUILDERS
+// ════════════════════════════════════════════════
+
+/* ---- OVEN ---- */
+function buildOvenStep() {
+  const saved = state.wizardAnswers['Oven'] || {};
+  const cfg   = CEC_CONFIG.OVEN;
+
+  const wrap = div('');
+  wrap.innerHTML = `
+    <div class="section-card">
+      <h3><span class="section-number">1</span> Oven type(s)</h3>
+      <p class="hint" style="margin-bottom:14px;">Select all that apply — you can choose more than one</p>
+      <div class="chip-group" id="oven-types">
+        ${cfg.TYPES.map(t => `
+          <div class="chip ${saved.types && saved.types.includes(t.id) ? 'selected' : ''}"
+               onclick="toggleChip(this,'${t.id}')" data-value="${t.id}">
+            <span class="check">✓</span>
+            ${t.label}${t.referToKieran ? '' : ' — £'+t.price}
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="section-card">
+      <h3><span class="section-number">2</span> Add-ons</h3>
+      <div class="field">
+        <label>Include a hob clean? (+£${cfg.HOB_ADDON})</label>
+        <div class="yesno-group">
+          <button class="yesno-btn ${saved.hob ? 'selected' : ''}" id="hob-yes" onclick="yesNo('hob-yes','hob-no')">Yes</button>
+          <button class="yesno-btn ${saved.hob === false ? 'selected' : ''}" id="hob-no" onclick="yesNo('hob-no','hob-yes')">No</button>
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label>Include an extractor clean? (+£${cfg.EXTRACTOR_ADDON})</label>
+        <div class="yesno-group">
+          <button class="yesno-btn ${saved.extractor ? 'selected' : ''}" id="ext-yes" onclick="yesNo('ext-yes','ext-no')">Yes</button>
+          <button class="yesno-btn ${saved.extractor === false ? 'selected' : ''}" id="ext-no" onclick="yesNo('ext-no','ext-yes')">No</button>
+        </div>
+      </div>
+    </div>
+  `;
+  return wrap;
+}
+
+/* ---- DEEP CLEAN ---- */
+function buildDeepCleanStep() {
+  const saved = state.wizardAnswers['Deep Clean'] || {};
+  const cfg   = CEC_CONFIG.DEEP_CLEAN;
+
+  const wrap = div('');
+  wrap.innerHTML = `
+    <div class="section-card">
+      <h3><span class="section-number">1</span> Property type</h3>
+      <div class="field">
+        <label>Is this domestic or commercial?</label>
+        <div class="yesno-group">
+          <button class="yesno-btn ${saved.commercial === false ? 'selected' : ''}" id="dc-domestic" onclick="dcSetCommercial(false)">Domestic</button>
+          <button class="yesno-btn ${saved.commercial === true ? 'selected' : ''}" id="dc-commercial" onclick="dcSetCommercial(true)">Commercial</button>
+        </div>
+      </div>
+      <div id="dc-commercial-sub" style="display:${saved.commercial ? 'block' : 'none'}">
+        <div class="field">
+          <label>Is this a residential property managed commercially?<br><span class="opt" style="font-size:12px;">(e.g. letting agent — NOT an office block)</span></label>
+          <div class="yesno-group">
+            <button class="yesno-btn ${saved.residentialManaged === true ? 'selected' : ''}" id="dc-res-yes" onclick="dcSetResManaged(true)">Yes — letting agent / managed residential</button>
+            <button class="yesno-btn ${saved.residentialManaged === false ? 'selected' : ''}" id="dc-res-no" onclick="dcSetResManaged(false)">No — office / commercial premises</button>
+          </div>
+        </div>
+        <div id="dc-refer" class="refer-box" style="display:${saved.residentialManaged === false ? 'block' : 'none'}">
+          Please refer to Kieran
+        </div>
+      </div>
+    </div>
+
+    <div class="section-card" id="dc-beds-card" style="display:${(saved.commercial === false || saved.residentialManaged === true) ? 'block' : 'none'}">
+      <h3><span class="section-number">2</span> Bedrooms</h3>
+      <div class="field" style="margin-bottom:0">
+        <label>How many bedrooms?</label>
+        <input type="number" id="dc-beds" min="1" max="99" placeholder="e.g. 3"
+               value="${saved.beds || ''}"
+               oninput="dcUpdateEstimate()" style="max-width:120px;" />
+      </div>
+      <div id="dc-estimate" class="info-box" style="margin-top:16px; display:${saved.beds ? 'flex' : 'none'}">
+        <span>📋</span>
+        <span id="dc-estimate-text"></span>
+      </div>
+      <div class="warn-box" style="margin-top:12px;">
+        ⚠️ Time estimates are very approximate and dependent on the condition of the property.
+      </div>
+    </div>
+  `;
+
+  // Populate estimate if we have saved data
+  if (saved.beds) setTimeout(dcUpdateEstimate, 50);
+
+  return wrap;
+}
+
+function dcSetCommercial(val) {
+  const s = state.wizardAnswers['Deep Clean'] || {};
+  s.commercial = val;
+  state.wizardAnswers['Deep Clean'] = s;
+  document.getElementById('dc-domestic').classList.toggle('selected', !val);
+  document.getElementById('dc-commercial').classList.toggle('selected', val);
+  document.getElementById('dc-commercial-sub').style.display = val ? 'block' : 'none';
+  document.getElementById('dc-beds-card').style.display = (!val) ? 'block' : 'none';
+}
+
+function dcSetResManaged(val) {
+  const s = state.wizardAnswers['Deep Clean'] || {};
+  s.residentialManaged = val;
+  state.wizardAnswers['Deep Clean'] = s;
+  document.getElementById('dc-res-yes').classList.toggle('selected', val);
+  document.getElementById('dc-res-no').classList.toggle('selected', !val);
+  document.getElementById('dc-refer').style.display = !val ? 'block' : 'none';
+  document.getElementById('dc-beds-card').style.display = val ? 'block' : 'none';
+}
+
+function dcUpdateEstimate() {
+  const beds = parseInt(document.getElementById('dc-beds').value);
+  const s    = state.wizardAnswers['Deep Clean'] || {};
+  s.beds = beds || null;
+  state.wizardAnswers['Deep Clean'] = s;
+
+  const estimateEl = document.getElementById('dc-estimate');
+  if (!beds || beds < 1) { estimateEl.style.display = 'none'; return; }
+
+  const cfg  = CEC_CONFIG.DEEP_CLEAN;
+  const rate = (s.commercial && s.residentialManaged) ? cfg.COMMERCIAL_RATE : cfg.DOMESTIC_RATE;
+  const rateLabel = (s.commercial && s.residentialManaged) ? '£25/hr + VAT' : '£29/hr inc VAT';
+
+  let minH, maxH;
+  if (beds <= cfg.HOURS_BY_BEDS.length) {
+    [minH, maxH] = cfg.HOURS_BY_BEDS[beds - 1];
+  } else {
+    const last = cfg.HOURS_BY_BEDS[cfg.HOURS_BY_BEDS.length - 1];
+    const extra = (beds - cfg.HOURS_BY_BEDS.length) * cfg.EXTRA_BED_HOURS;
+    [minH, maxH] = [last[0] + extra, last[1] + extra];
+  }
+
+  estimateEl.style.display = 'flex';
+  document.getElementById('dc-estimate-text').innerHTML =
+    `<strong>${beds} bedroom${beds>1?'s':''}:</strong> estimated ${minH}–${maxH} hours at ${rateLabel} = approx £${(minH*rate).toFixed(0)}–£${(maxH*rate).toFixed(0)}`;
+}
+
+/* ---- CARPETS / UPHOLSTERY ---- */
+function buildCarpetsStep() {
+  const saved = state.wizardAnswers['Carpets/Upholstery'] || {};
+  const cfg   = CEC_CONFIG.CARPET;
+
+  const wrap = div('');
+  wrap.innerHTML = `
+    <div class="section-card">
+      <h3><span class="section-number">1</span> Carpet cleaning</h3>
+
+      <div class="field">
+        <label>Domestic or commercial?</label>
+        <div class="yesno-group">
+          <button class="yesno-btn ${saved.carpetCommercial === false ? 'selected':''}" id="cc-domestic" onclick="ccSetCommercial(false)">Domestic</button>
+          <button class="yesno-btn ${saved.carpetCommercial === true ? 'selected':''}" id="cc-commercial" onclick="ccSetCommercial(true)">Commercial</button>
+        </div>
+        <div id="cc-refer" class="refer-box" style="margin-top:12px; display:${saved.carpetCommercial ? 'block' : 'none'}">Please refer to Kieran</div>
+      </div>
+
+      <div id="cc-main" style="display:${saved.carpetCommercial === false ? 'block' : 'none'}">
+        <div class="field">
+          <label>Is the client a landlord or letting agent?</label>
+          <div class="yesno-group">
+            <button class="yesno-btn ${saved.isLandlord===true?'selected':''}" id="cc-ll-yes" onclick="ccSetLandlord(true)">Yes</button>
+            <button class="yesno-btn ${saved.isLandlord===false?'selected':''}" id="cc-ll-no" onclick="ccSetLandlord(false)">No</button>
+          </div>
+          <p class="hint mt-4">Landlords are exempt from the £15 loading charge</p>
+        </div>
+
+        <div class="field">
+          <label>How many rooms? <span class="opt">(do not include hall/stairs/landing)</span></label>
+          <input type="number" id="cc-rooms" min="1" value="${saved.rooms||''}" placeholder="e.g. 3" style="max-width:100px;" />
+        </div>
+        <div class="info-box" style="font-size:13px; margin-bottom:12px;">
+          <span>ℹ️</span> Hall, stairs &amp; landing is separate and does <strong>not</strong> count as a room.
+        </div>
+
+        <div class="field">
+          <label>Include hall, stairs &amp; landing? (+£${cfg.HALL_STAIRS_LANDING})</label>
+          <div class="yesno-group">
+            <button class="yesno-btn ${saved.hsl===true?'selected':''}" id="cc-hsl-yes" onclick="yesNo('cc-hsl-yes','cc-hsl-no')">Yes</button>
+            <button class="yesno-btn ${saved.hsl===false?'selected':''}" id="cc-hsl-no" onclick="yesNo('cc-hsl-no','cc-hsl-yes')">No</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Are any rooms double-sized? (e.g. open-plan living/dining)</label>
+          <div class="yesno-group">
+            <button class="yesno-btn ${saved.hasDoubles===true?'selected':''}" id="cc-dbl-yes" onclick="ccSetDoubles(true)">Yes</button>
+            <button class="yesno-btn ${saved.hasDoubles===false?'selected':''}" id="cc-dbl-no" onclick="ccSetDoubles(false)">No</button>
+          </div>
+        </div>
+        <div id="cc-doubles-input" style="display:${saved.hasDoubles ? 'block':'none'}">
+          <div class="field">
+            <label>How many double rooms? <span class="opt">(each counts as 2 rooms)</span></label>
+            <input type="number" id="cc-doubles" min="1" value="${saved.doubleCount||''}" placeholder="1" style="max-width:100px;" />
+          </div>
+        </div>
+
+        <div class="field" style="margin-bottom:0">
+          <label>Would any rooms benefit from stain protection? (+£${cfg.STAIN_PROTECTION}/room)</label>
+          <div class="yesno-group">
+            <button class="yesno-btn ${saved.carpetStain===true?'selected':''}" id="cc-sp-yes" onclick="ccSetCarpetStain(true)">Yes</button>
+            <button class="yesno-btn ${saved.carpetStain===false?'selected':''}" id="cc-sp-no" onclick="ccSetCarpetStain(false)">No</button>
+          </div>
+        </div>
+        <div id="cc-stain-input" style="display:${saved.carpetStain ? 'block':'none'}; margin-top:12px;">
+          <div class="field" style="margin-bottom:0">
+            <label>How many rooms with stain protection?</label>
+            <input type="number" id="cc-stain-rooms" min="1" value="${saved.stainRooms||''}" placeholder="1" style="max-width:100px;" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <h3><span class="section-number">2</span> Upholstery</h3>
+
+      <div class="inline-row">
+        <div class="field">
+          <label>Sofa seats <span class="opt">(£${cfg.SOFA_SEAT_PRICE}/seat)</span></label>
+          <input type="number" id="uph-sofas" min="0" value="${saved.sofaSeats||0}" placeholder="0" style="max-width:100px;" oninput="uphUpdateFootstool()" />
+        </div>
+        <div class="field">
+          <label>Armchairs <span class="opt">(£${cfg.ARMCHAIR_PRICE}/chair)</span></label>
+          <input type="number" id="uph-chairs" min="0" value="${saved.armchairs||0}" placeholder="0" style="max-width:100px;" oninput="uphUpdateFootstool()" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Is there a footstool?</label>
+        <div class="yesno-group">
+          <button class="yesno-btn ${saved.footstool===true?'selected':''}" id="uph-fs-yes" onclick="yesNo('uph-fs-yes','uph-fs-no')">Yes</button>
+          <button class="yesno-btn ${saved.footstool===false?'selected':''}" id="uph-fs-no" onclick="yesNo('uph-fs-no','uph-fs-yes')">No</button>
+        </div>
+        <div id="uph-footstool-free" class="quote-free-note" style="display:none; margin-top:8px;">
+          🎉 3+ seats booked — footstool is FREE! Tell the client.
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Stain protection</label>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <div class="yesno-group">
+            <span style="font-size:13px; width:180px; align-self:center; color:var(--gray-600);">Sofa stain protection? (+£${cfg.SOFA_STAIN_PROTECTION}/seat)</span>
+            <button class="yesno-btn ${saved.sofaStain===true?'selected':''}" id="ssp-yes" onclick="yesNo('ssp-yes','ssp-no')">Yes</button>
+            <button class="yesno-btn ${saved.sofaStain===false?'selected':''}" id="ssp-no" onclick="yesNo('ssp-no','ssp-yes')">No</button>
+          </div>
+          <div class="yesno-group">
+            <span style="font-size:13px; width:180px; align-self:center; color:var(--gray-600);">Armchair stain protection? (+£${cfg.ARMCHAIR_STAIN_PROTECTION}/chair)</span>
+            <button class="yesno-btn ${saved.chairStain===true?'selected':''}" id="asp-yes" onclick="yesNo('asp-yes','asp-no')">Yes</button>
+            <button class="yesno-btn ${saved.chairStain===false?'selected':''}" id="asp-no" onclick="yesNo('asp-no','asp-yes')">No</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  `;
+
+  setTimeout(uphUpdateFootstool, 50);
+  return wrap;
+}
+
+function ccSetCommercial(val) {
+  const s = state.wizardAnswers['Carpets/Upholstery'] || {};
+  s.carpetCommercial = val;
+  state.wizardAnswers['Carpets/Upholstery'] = s;
+  document.getElementById('cc-domestic').classList.toggle('selected', !val);
+  document.getElementById('cc-commercial').classList.toggle('selected', val);
+  document.getElementById('cc-refer').style.display = val ? 'block' : 'none';
+  document.getElementById('cc-main').style.display  = !val ? 'block' : 'none';
+}
+
+function ccSetLandlord(val) {
+  const s = state.wizardAnswers['Carpets/Upholstery'] || {};
+  s.isLandlord = val;
+  state.wizardAnswers['Carpets/Upholstery'] = s;
+  document.getElementById('cc-ll-yes').classList.toggle('selected', val);
+  document.getElementById('cc-ll-no').classList.toggle('selected', !val);
+}
+
+function ccSetDoubles(val) {
+  const s = state.wizardAnswers['Carpets/Upholstery'] || {};
+  s.hasDoubles = val;
+  state.wizardAnswers['Carpets/Upholstery'] = s;
+  document.getElementById('cc-dbl-yes').classList.toggle('selected', val);
+  document.getElementById('cc-dbl-no').classList.toggle('selected', !val);
+  document.getElementById('cc-doubles-input').style.display = val ? 'block' : 'none';
+}
+
+function ccSetCarpetStain(val) {
+  const s = state.wizardAnswers['Carpets/Upholstery'] || {};
+  s.carpetStain = val;
+  state.wizardAnswers['Carpets/Upholstery'] = s;
+  document.getElementById('cc-sp-yes').classList.toggle('selected', val);
+  document.getElementById('cc-sp-no').classList.toggle('selected', !val);
+  document.getElementById('cc-stain-input').style.display = val ? 'block' : 'none';
+}
+
+function uphUpdateFootstool() {
+  const sofas  = parseInt(document.getElementById('uph-sofas')?.value) || 0;
+  const chairs = parseInt(document.getElementById('uph-chairs')?.value) || 0;
+  const total  = sofas + chairs;
+  const freeEl = document.getElementById('uph-footstool-free');
+  if (freeEl) freeEl.style.display = total >= 3 ? 'flex' : 'none';
+}
+
+/* ---- PRAM / CAR SEAT ---- */
+function buildPramStep() {
+  const saved = state.wizardAnswers['Pram/Car Seat'] || {};
+  const cfg   = CEC_CONFIG.PRAM;
+
+  const wrap = div('');
+  wrap.innerHTML = `
+    <div class="section-card">
+      <h3><span class="section-number">1</span> Pram</h3>
+
+      <div class="field">
+        <label>Standard pram included? (£${cfg.STANDARD_PRAM})</label>
+        <div class="yesno-group">
+          <button class="yesno-btn ${saved.pram===true?'selected':''}" id="pram-yes" onclick="pramToggle(true)">Yes</button>
+          <button class="yesno-btn ${saved.pram===false?'selected':''}" id="pram-no" onclick="pramToggle(false)">No</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Extra components? (e.g. bassinet) (+£${cfg.EXTRA_COMPONENT} each)</label>
+        <div class="yesno-group">
+          <button class="yesno-btn ${saved.hasExtras===true?'selected':''}" id="pram-ext-yes" onclick="pramSetExtras(true)">Yes</button>
+          <button class="yesno-btn ${saved.hasExtras===false?'selected':''}" id="pram-ext-no" onclick="pramSetExtras(false)">No</button>
+        </div>
+      </div>
+      <div id="pram-extras-input" style="display:${saved.hasExtras ? 'block':'none'}; margin-top:8px;">
+        <div class="field" style="margin-bottom:0">
+          <label>How many extra components?</label>
+          <input type="number" id="pram-extras" min="1" value="${saved.extraCount||''}" placeholder="1" style="max-width:100px;" />
+        </div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <h3><span class="section-number">2</span> Car seat</h3>
+      <div class="field">
+        <label>Car seat(s) included? (£${cfg.CAR_SEAT} each)</label>
+        <div class="yesno-group">
+          <button class="yesno-btn ${saved.carSeat===true?'selected':''}" id="cs-yes" onclick="carSeatToggle(true)">Yes</button>
+          <button class="yesno-btn ${saved.carSeat===false?'selected':''}" id="cs-no" onclick="carSeatToggle(false)">No</button>
+        </div>
+      </div>
+      <div id="cs-count-input" style="display:${saved.carSeat ? 'block':'none'}; margin-top:8px;">
+        <div class="field" style="margin-bottom:0">
+          <label>How many car seats?</label>
+          <input type="number" id="cs-count" min="1" value="${saved.carSeatCount||''}" placeholder="1" style="max-width:100px;" />
+        </div>
+      </div>
+    </div>
+  `;
+  return wrap;
+}
+
+function pramToggle(val) {
+  const s = state.wizardAnswers['Pram/Car Seat'] || {};
+  s.pram = val;
+  state.wizardAnswers['Pram/Car Seat'] = s;
+  document.getElementById('pram-yes').classList.toggle('selected', val);
+  document.getElementById('pram-no').classList.toggle('selected', !val);
+}
+function pramSetExtras(val) {
+  const s = state.wizardAnswers['Pram/Car Seat'] || {};
+  s.hasExtras = val;
+  state.wizardAnswers['Pram/Car Seat'] = s;
+  document.getElementById('pram-ext-yes').classList.toggle('selected', val);
+  document.getElementById('pram-ext-no').classList.toggle('selected', !val);
+  document.getElementById('pram-extras-input').style.display = val ? 'block' : 'none';
+}
+function carSeatToggle(val) {
+  const s = state.wizardAnswers['Pram/Car Seat'] || {};
+  s.carSeat = val;
+  state.wizardAnswers['Pram/Car Seat'] = s;
+  document.getElementById('cs-yes').classList.toggle('selected', val);
+  document.getElementById('cs-no').classList.toggle('selected', !val);
+  document.getElementById('cs-count-input').style.display = val ? 'block' : 'none';
+}
+
+// ════════════════════════════════════════════════
+//  STEP VALIDATION + STATE SAVE
+// ════════════════════════════════════════════════
+function validateAndSaveStep(service) {
+  if (service === 'Oven') {
+    const types = [...document.querySelectorAll('#oven-types .chip.selected')].map(c => c.dataset.value);
+    if (types.length === 0) { alert('Please select at least one oven type.'); return false; }
+    const hob       = document.getElementById('hob-yes').classList.contains('selected');
+    const hobSet    = hob || document.getElementById('hob-no').classList.contains('selected');
+    const extractor = document.getElementById('ext-yes').classList.contains('selected');
+    const extSet    = extractor || document.getElementById('ext-no').classList.contains('selected');
+    if (!hobSet) { alert('Please answer the hob clean question.'); return false; }
+    if (!extSet) { alert('Please answer the extractor clean question.'); return false; }
+    state.wizardAnswers['Oven'] = { types, hob, extractor };
+    return true;
+  }
+
+  if (service === 'Deep Clean') {
+    const s = state.wizardAnswers['Deep Clean'] || {};
+    if (s.commercial === undefined) { alert('Please select domestic or commercial.'); return false; }
+    if (s.commercial && s.residentialManaged === undefined) { alert('Please answer the residential managed question.'); return false; }
+    if (s.commercial && s.residentialManaged === false) {
+      // Refer to Kieran — skip quoting, mark as referral
+      state.wizardAnswers['Deep Clean'] = { ...s, referKieran: true };
+      return true;
+    }
+    const beds = parseInt(document.getElementById('dc-beds')?.value);
+    if (!beds || beds < 1) { alert('Please enter the number of bedrooms.'); return false; }
+    s.beds = beds;
+    state.wizardAnswers['Deep Clean'] = s;
+    return true;
+  }
+
+  if (service === 'Carpets/Upholstery') {
+    const s = state.wizardAnswers['Carpets/Upholstery'] || {};
+    // Carpet section (only if domestic selected)
+    if (s.carpetCommercial === undefined) { alert('Please select domestic or commercial for carpet cleaning.'); return false; }
+    if (!s.carpetCommercial) {
+      if (s.isLandlord === undefined) { alert('Please answer the landlord/letting agent question.'); return false; }
+      const rooms = parseInt(document.getElementById('cc-rooms')?.value);
+      if (!rooms && rooms !== 0) { s.rooms = 0; }
+      else s.rooms = rooms;
+      const hslYes = document.getElementById('cc-hsl-yes');
+      if (hslYes && !hslYes.classList.contains('selected') && !document.getElementById('cc-hsl-no').classList.contains('selected')) {
+        alert('Please answer the hall/stairs/landing question.'); return false;
+      }
+      s.hsl = hslYes && hslYes.classList.contains('selected');
+      if (s.hasDoubles === undefined) { alert('Please answer the double rooms question.'); return false; }
+      if (s.hasDoubles) {
+        const dc = parseInt(document.getElementById('cc-doubles')?.value);
+        if (!dc || dc < 1) { alert('Please enter the number of double rooms.'); return false; }
+        s.doubleCount = dc;
+      }
+      if (s.carpetStain === undefined) { alert('Please answer the stain protection question for carpets.'); return false; }
+      if (s.carpetStain) {
+        const sr = parseInt(document.getElementById('cc-stain-rooms')?.value);
+        if (!sr || sr < 1) { alert('Please enter how many rooms need stain protection.'); return false; }
+        s.stainRooms = sr;
+      }
+    }
+
+    // Upholstery
+    s.sofaSeats  = parseInt(document.getElementById('uph-sofas')?.value) || 0;
+    s.armchairs  = parseInt(document.getElementById('uph-chairs')?.value) || 0;
+    const fsYes = document.getElementById('uph-fs-yes');
+    const fsNo  = document.getElementById('uph-fs-no');
+    if (fsYes && !fsYes.classList.contains('selected') && !fsNo.classList.contains('selected')) {
+      alert('Please answer the footstool question.'); return false;
+    }
+    s.footstool = fsYes && fsYes.classList.contains('selected');
+    s.sofaStain  = document.getElementById('ssp-yes')?.classList.contains('selected') || false;
+    s.chairStain = document.getElementById('asp-yes')?.classList.contains('selected') || false;
+
+    state.wizardAnswers['Carpets/Upholstery'] = s;
+    return true;
+  }
+
+  if (service === 'Pram/Car Seat') {
+    const s = state.wizardAnswers['Pram/Car Seat'] || {};
+    if (s.pram === undefined) { alert('Please answer the pram question.'); return false; }
+    if (s.hasExtras === undefined) { alert('Please answer the extra components question.'); return false; }
+    if (s.hasExtras) {
+      const ec = parseInt(document.getElementById('pram-extras')?.value);
+      if (!ec || ec < 1) { alert('Please enter the number of extra components.'); return false; }
+      s.extraCount = ec;
+    }
+    if (s.carSeat === undefined) { alert('Please answer the car seat question.'); return false; }
+    if (s.carSeat) {
+      const cc = parseInt(document.getElementById('cs-count')?.value);
+      if (!cc || cc < 1) { alert('Please enter the number of car seats.'); return false; }
+      s.carSeatCount = cc;
+    }
+    state.wizardAnswers['Pram/Car Seat'] = s;
+    return true;
+  }
+
+  return true;
+}
+
+// ════════════════════════════════════════════════
+//  QUOTE CALCULATION
+// ════════════════════════════════════════════════
+function calcOven() {
+  const s   = state.wizardAnswers['Oven'];
+  const cfg = CEC_CONFIG.OVEN;
+  const lines = [];
+  let total = 0;
+
+  s.types.forEach(typeId => {
+    const t = cfg.TYPES.find(x => x.id === typeId);
+    if (!t) return;
+    if (t.referToKieran) {
+      lines.push({ label: t.label, note: 'Refer to Kieran', price: null });
+    } else {
+      lines.push({ label: t.label, price: t.price });
+      total += t.price;
+    }
+  });
+
+  // Combi-only minimum
+  if (s.types.length === 1 && s.types[0] === 'combi') {
+    total = Math.max(total, CEC_CONFIG.MIN_CALLOUT);
+  }
+
+  if (s.hob) { lines.push({ label: 'Hob clean', price: cfg.HOB_ADDON }); total += cfg.HOB_ADDON; }
+  if (s.extractor) { lines.push({ label: 'Extractor clean', price: cfg.EXTRACTOR_ADDON }); total += cfg.EXTRACTOR_ADDON; }
+
+  // Minimum callout
+  if (total < CEC_CONFIG.MIN_CALLOUT) {
+    lines.push({ label: 'Minimum callout adjustment', price: CEC_CONFIG.MIN_CALLOUT - total });
+    total = CEC_CONFIG.MIN_CALLOUT;
+  }
+
+  return { lines, total };
+}
+
+function calcDeepClean() {
+  const s   = state.wizardAnswers['Deep Clean'];
+  const cfg = CEC_CONFIG.DEEP_CLEAN;
+
+  if (s.referKieran) {
+    return { lines: [{ label: 'Commercial premises', note: 'Refer to Kieran', price: null }], total: null };
+  }
+
+  const rate = (s.commercial && s.residentialManaged) ? cfg.COMMERCIAL_RATE : cfg.DOMESTIC_RATE;
+  const rateLabel = (s.commercial && s.residentialManaged) ? '£25/hr + VAT' : '£29/hr inc VAT';
+
+  const beds = s.beds;
+  let minH, maxH;
+  if (beds <= cfg.HOURS_BY_BEDS.length) {
+    [minH, maxH] = cfg.HOURS_BY_BEDS[beds - 1];
+  } else {
+    const last  = cfg.HOURS_BY_BEDS[cfg.HOURS_BY_BEDS.length - 1];
+    const extra = (beds - cfg.HOURS_BY_BEDS.length) * cfg.EXTRA_BED_HOURS;
+    [minH, maxH] = [last[0] + extra, last[1] + extra];
+  }
+
+  const minCost = minH * rate;
+  const maxCost = maxH * rate;
+
+  return {
+    lines: [
+      { label: `${beds} bed ${s.commercial ? 'commercial residential' : 'domestic'} — ${minH}–${maxH} hrs @ ${rateLabel}`,
+        price: null, rangeMin: minCost, rangeMax: maxCost }
+    ],
+    total: null,
+    rangeMin: minCost,
+    rangeMax: maxCost,
+    isRange: true
+  };
+}
+
+function calcCarpets() {
+  const s   = state.wizardAnswers['Carpets/Upholstery'];
+  const cfg = CEC_CONFIG.CARPET;
+  const lines = [];
+  let carpetTotal = 0;
+  let uphTotal    = 0;
+
+  // ---- Carpet section ----
+  if (!s.carpetCommercial && s.rooms > 0) {
+    // Count total rooms (singles + double rooms * 2)
+    let normalRooms = s.rooms;
+    let doubleRooms = s.hasDoubles ? (s.doubleCount || 0) : 0;
+    let totalRooms  = normalRooms + doubleRooms; // double rooms already counted once in s.rooms, add extra
+
+    // Actually: s.rooms is what user said (not counting doubles twice)
+    // Double rooms each count as 2, so effective room count:
+    let effectiveRooms = (normalRooms - doubleRooms) + (doubleRooms * 2);
+
+    // Get price from table
+    let roomPrice;
+    const table = cfg.ROOM_PRICING;
+    if (effectiveRooms <= table[table.length-1].rooms) {
+      const entry = table.find(r => r.rooms === effectiveRooms) ||
+                    table.reduce((best, r) => (r.rooms <= effectiveRooms && r.rooms > (best?.rooms||0)) ? r : best, null);
+      roomPrice = entry ? entry.price : table[table.length-1].price + (effectiveRooms - table[table.length-1].rooms) * cfg.EXTRA_ROOM_PRICE;
+    } else {
+      roomPrice = table[table.length-1].price + (effectiveRooms - table[table.length-1].rooms) * cfg.EXTRA_ROOM_PRICE;
+    }
+
+    lines.push({ label: `${effectiveRooms} room${effectiveRooms !== 1 ? 's' : ''}${doubleRooms > 0 ? ` (inc. ${doubleRooms} double)` : ''}`, price: roomPrice });
+    carpetTotal += roomPrice;
+
+    if (s.hsl) { lines.push({ label: 'Hall, stairs & landing', price: cfg.HALL_STAIRS_LANDING }); carpetTotal += cfg.HALL_STAIRS_LANDING; }
+    if (s.carpetStain && s.stainRooms > 0) {
+      const spCost = s.stainRooms * cfg.STAIN_PROTECTION;
+      lines.push({ label: `Stain protection (${s.stainRooms} room${s.stainRooms>1?'s':''})`, price: spCost });
+      carpetTotal += spCost;
+    }
+    if (!s.isLandlord) {
+      lines.push({ label: 'Loading charge', price: cfg.LOADING_CHARGE });
+      carpetTotal += cfg.LOADING_CHARGE;
+    }
+
+    // Minimum callout on carpet only
+    if (carpetTotal < CEC_CONFIG.MIN_CALLOUT && carpetTotal > 0) {
+      const adj = CEC_CONFIG.MIN_CALLOUT - carpetTotal;
+      lines.push({ label: 'Minimum callout adjustment', price: adj });
+      carpetTotal = CEC_CONFIG.MIN_CALLOUT;
+    }
+  } else if (s.carpetCommercial) {
+    lines.push({ label: 'Commercial carpet clean', note: 'Refer to Kieran', price: null });
+  }
+
+  // ---- Upholstery section ----
+  if (s.sofaSeats > 0) {
+    const sc = s.sofaSeats * cfg.SOFA_SEAT_PRICE;
+    lines.push({ label: `${s.sofaSeats} sofa seat${s.sofaSeats>1?'s':''}`, price: sc, section: 'upholstery' });
+    uphTotal += sc;
+  }
+  if (s.armchairs > 0) {
+    const ac = s.armchairs * cfg.ARMCHAIR_PRICE;
+    lines.push({ label: `${s.armchairs} armchair${s.armchairs>1?'s':''}`, price: ac, section: 'upholstery' });
+    uphTotal += ac;
+  }
+
+  const totalSeats = (s.sofaSeats || 0) + (s.armchairs || 0);
+  if (s.footstool) {
+    if (totalSeats >= 3) {
+      lines.push({ label: 'Footstool', price: 0, note: 'Free — 3+ seats booked! Tell the client.', section: 'upholstery' });
+    } else {
+      lines.push({ label: 'Footstool', price: cfg.FOOTSTOOL_PRICE, section: 'upholstery' });
+      uphTotal += cfg.FOOTSTOOL_PRICE;
+    }
+  }
+  if (s.sofaStain && s.sofaSeats > 0) {
+    const spCost = s.sofaSeats * cfg.SOFA_STAIN_PROTECTION;
+    lines.push({ label: `Sofa stain protection (${s.sofaSeats} seat${s.sofaSeats>1?'s':''})`, price: spCost, section: 'upholstery' });
+    uphTotal += spCost;
+  }
+  if (s.chairStain && s.armchairs > 0) {
+    const spCost = s.armchairs * cfg.ARMCHAIR_STAIN_PROTECTION;
+    lines.push({ label: `Armchair stain protection (${s.armchairs})`, price: spCost, section: 'upholstery' });
+    uphTotal += spCost;
+  }
+
+  // Min callout on upholstery
+  if (uphTotal < CEC_CONFIG.MIN_CALLOUT && uphTotal > 0) {
+    const adj = CEC_CONFIG.MIN_CALLOUT - uphTotal;
+    lines.push({ label: 'Minimum callout adjustment (upholstery)', price: adj, section: 'upholstery' });
+    uphTotal = CEC_CONFIG.MIN_CALLOUT;
+  }
+
+  const total = carpetTotal + uphTotal;
+  return { lines, total, carpetTotal, uphTotal };
+}
+
+function calcPram() {
+  const s   = state.wizardAnswers['Pram/Car Seat'];
+  const cfg = CEC_CONFIG.PRAM;
+  const lines = [];
+  let total = 0;
+
+  if (s.pram) { lines.push({ label: 'Standard pram', price: cfg.STANDARD_PRAM }); total += cfg.STANDARD_PRAM; }
+  if (s.hasExtras && s.extraCount > 0) {
+    const cost = s.extraCount * cfg.EXTRA_COMPONENT;
+    lines.push({ label: `Extra component${s.extraCount > 1 ? 's' : ''} × ${s.extraCount}`, price: cost });
+    total += cost;
+  }
+  if (s.carSeat && s.carSeatCount > 0) {
+    const cost = s.carSeatCount * cfg.CAR_SEAT;
+    lines.push({ label: `Car seat${s.carSeatCount > 1 ? 's' : ''} × ${s.carSeatCount}`, price: cost });
+    total += cost;
+  }
+
+  if (total < CEC_CONFIG.MIN_CALLOUT && total > 0) {
+    const adj = CEC_CONFIG.MIN_CALLOUT - total;
+    lines.push({ label: 'Minimum callout adjustment', price: adj });
+    total = CEC_CONFIG.MIN_CALLOUT;
+  }
+
+  return { lines, total };
+}
+
+// ════════════════════════════════════════════════
+//  QUOTE OUTPUT
+// ════════════════════════════════════════════════
+function buildQuoteOutput() {
+  // Calculate all services
+  state.quoteLines = {};
+
+  let overallTotal = 0;
+  let hasRange = false;
+  let rangeMin = 0, rangeMax = 0;
+
+  state.services.forEach(svc => {
+    if (svc === 'Oven')              state.quoteLines[svc] = calcOven();
+    else if (svc === 'Deep Clean')   state.quoteLines[svc] = calcDeepClean();
+    else if (svc === 'Carpets/Upholstery') state.quoteLines[svc] = calcCarpets();
+    else if (svc === 'Pram/Car Seat') state.quoteLines[svc] = calcPram();
+
+    const q = state.quoteLines[svc];
+    if (q.isRange) {
+      hasRange = true;
+      rangeMin += q.rangeMin || 0;
+      rangeMax += q.rangeMax || 0;
+    } else if (q.total !== null && q.total !== undefined) {
+      overallTotal += q.total;
+    }
+  });
+
+  // Build HTML
+  let html = `<div class="quote-card">
+    <div class="quote-header">
+      <h2>Quote for ${esc(state.lead.Name || 'Client')}</h2>
+      <p>${esc(state.lead.Date || '')} · ${esc(state.lead['Clean Type'] || '')}</p>
+    </div>
+    <div class="quote-body">`;
+
+  state.services.forEach(svc => {
+    const q = state.quoteLines[svc];
+    if (!q) return;
+
+    html += `<div class="quote-service">
+      <div class="quote-service-name">${esc(svc)}</div>`;
+
+    q.lines.forEach(line => {
+      if (line.price === null && line.note) {
+        html += `<div class="quote-line"><span>${esc(line.label)}</span><span style="color:var(--red)">${esc(line.note)}</span></div>`;
+      } else if (line.rangeMin !== undefined) {
+        html += `<div class="quote-line"><span>${esc(line.label)}</span><span>£${fmt(line.rangeMin)}–£${fmt(line.rangeMax)}</span></div>`;
+      } else if (line.price === 0 && line.note) {
+        html += `<div class="quote-line"><span>${esc(line.label)}</span><span style="color:var(--teal)">FREE</span></div>
+          <div class="quote-free-note" style="display:inline-flex; margin-bottom:4px;">🎉 ${esc(line.note)}</div>`;
+      } else if (line.price !== null) {
+        html += `<div class="quote-line"><span>${esc(line.label)}</span><span>£${fmt(line.price)}</span></div>`;
+      }
+    });
+
+    if (q.total !== null && q.total !== undefined && !q.isRange) {
+      html += `<div class="quote-line total"><span>Service total</span><span>£${fmt(q.total)}</span></div>`;
+    } else if (q.isRange) {
+      html += `<div class="quote-line total"><span>Estimated total</span><span>£${fmt(q.rangeMin)}–£${fmt(q.rangeMax)}</span></div>`;
+    }
+
+    html += `</div>`;
+  });
+
+  html += `</div>`;
+
+  // Grand total
+  if (hasRange) {
+    html += `<div class="quote-total-row"><span>Estimated total</span><span>£${fmt(overallTotal + rangeMin)}–£${fmt(overallTotal + rangeMax)}</span></div>`;
+  } else {
+    html += `<div class="quote-total-row"><span>Total</span><span>£${fmt(overallTotal)}</span></div>`;
+  }
+
+  html += `<div class="quote-disclaimer">⚠️ ${esc(CEC_CONFIG.QUOTE_DISCLAIMER)}</div>
+  </div>`;
+
+  document.getElementById('quote-output').innerHTML = html;
+
+  // Save quote text to lead
+  state.lead.Quote = buildQuoteText();
+}
+
+function buildQuoteText() {
+  let text = `Quote for ${state.lead.Name || 'Client'} — ${state.lead.Date || ''}\n\n`;
+  let overallTotal = 0;
+  let isRange = false;
+
+  state.services.forEach(svc => {
+    const q = state.quoteLines[svc];
+    if (!q) return;
+    text += `${svc.toUpperCase()}\n`;
+    q.lines.forEach(l => {
+      if (l.price === null && l.note) text += `  ${l.label}: ${l.note}\n`;
+      else if (l.rangeMin !== undefined) text += `  ${l.label}: £${fmt(l.rangeMin)}–£${fmt(l.rangeMax)}\n`;
+      else if (l.price !== null) text += `  ${l.label}: £${fmt(l.price)}\n`;
+    });
+    if (q.total !== null && q.total !== undefined && !q.isRange) {
+      text += `  Subtotal: £${fmt(q.total)}\n`;
+      overallTotal += q.total;
+    } else if (q.isRange) {
+      text += `  Est. subtotal: £${fmt(q.rangeMin)}–£${fmt(q.rangeMax)}\n`;
+      isRange = true;
+    }
+    text += '\n';
+  });
+
+  text += `TOTAL: ${isRange ? 'Est. ' : ''}£${fmt(overallTotal)}\n`;
+  text += `\n${CEC_CONFIG.QUOTE_DISCLAIMER}`;
+  return text;
+}
+
+// ════════════════════════════════════════════════
+//  SUBMIT
+// ════════════════════════════════════════════════
+async function submitLeadDirect() {
+  state.lead = gatherLeadData();
+  await doSubmit();
+}
+
+async function submitLead() {
+  const btn = document.getElementById('submit-btn');
+  btn.innerHTML = '<span class="spinner"></span> Saving…';
+  btn.disabled = true;
+  await doSubmit();
+  btn.innerHTML = 'Submit & Save';
+  btn.disabled = false;
+}
+
+async function doSubmit() {
+  const url = CEC_CONFIG.APPS_SCRIPT_URL;
+  if (!url || url === 'YOUR_APPS_SCRIPT_URL_HERE') {
+    document.getElementById('success-msg').textContent =
+      'Lead captured (Google Sheets not yet configured — set APPS_SCRIPT_URL in config.js)';
+    showPage('success');
+    return;
+  }
+
+  try {
+    await fetch(url, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'append', data: state.lead }),
+    });
+    document.getElementById('success-msg').textContent =
+      `Lead for ${state.lead.Name || 'client'} has been saved to Google Sheets.`;
+    showPage('success');
+  } catch(err) {
+    alert('Error saving lead: ' + err.message + '\n\nPlease try again.');
+  }
+}
+
+function resetAndHome() {
+  // Reset form
+  document.getElementById('f-name').value = '';
+  document.getElementById('f-postcode').value = '';
+  document.getElementById('f-phone').value = '';
+  document.getElementById('f-email').value = '';
+  document.getElementById('f-notes').value = '';
+  document.getElementById('f-chased').value = '';
+  document.querySelectorAll('#clean-type-chips .chip').forEach(c => c.classList.remove('selected'));
+  state.quoteNeeded = null;
+  state.quoteNeededSet = false;
+  state.lead = {};
+  state.services = [];
+  state.wizardAnswers = {};
+  state.quoteLines = {};
+  showPage('home');
+}
+
+// ════════════════════════════════════════════════
+//  HELPERS
+// ════════════════════════════════════════════════
+function div(cls) {
+  const el = document.createElement('div');
+  if (cls) el.className = cls;
+  return el;
+}
+function esc(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function fmt(n) {
+  if (n === null || n === undefined) return '—';
+  return Number(n).toFixed(2).replace(/\.00$/, '');
+}
+function yesNo(yesId, noId) {
+  document.getElementById(yesId).classList.add('selected');
+  document.getElementById(noId).classList.remove('selected');
+}
+
+// ════════════════════════════════════════════════
+//  BOOT
+// ════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  loadLeads();
+});
+</script>
+</body>
+</html>
