@@ -6,7 +6,84 @@
   <title>CEC Lead Hub</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <script src="config.js"></script>
+  <script>
+// ============================================================
+//  CEC LEAD HUB — CONFIGURATION
+//  Edit this section to update pricing, services, and settings.
+// ============================================================
+const CEC_CONFIG = {
+
+  // Google Apps Script Web App URL — replace after deploying your script
+  APPS_SCRIPT_URL: "YOUR_APPS_SCRIPT_URL_HERE",
+
+  COVERAGE_CHECKER_URL: "https://kieran68-beep.github.io/cec-coverage-checker/",
+
+  CLOSED_STATUSES: ["Booked in CM", "Lost", "Ignored", "Rejected See Notes"],
+
+  ALL_STATUSES: [
+    "Quoted", "Waiting Reply", "Chased",
+    "Booked in CM", "Lost", "Ignored", "Rejected See Notes"
+  ],
+
+  LEAD_SOURCES: [
+    "Email", "Website", "Facebook", "Instagram",
+    "Word of Mouth", "WhatsApp", "Google", "Unknown"
+  ],
+
+  CLEAN_TYPES: [
+    "Oven", "Carpets/Upholstery", "Deep Clean",
+    "Pram/Car Seat", "Regular Clean", "AirBnB"
+  ],
+
+  MIN_CALLOUT: 75,
+
+  OVEN: {
+    TYPES: [
+      { id: "single", label: "Single oven",    price: 75,  referToKieran: false },
+      { id: "double", label: "Double oven",    price: 95,  referToKieran: false },
+      { id: "range",  label: "Standard range", price: 160, referToKieran: false },
+      { id: "aga",    label: "AGA",            price: 0,   referToKieran: true  },
+      { id: "combi",  label: "Combi",          price: 50,  referToKieran: false }
+    ],
+    HOB_ADDON: 15,
+    EXTRACTOR_ADDON: 15
+  },
+
+  DEEP_CLEAN: {
+    DOMESTIC_RATE: 29,
+    COMMERCIAL_RATE: 25,
+    HOURS_BY_BEDS: [[4,6],[6,8],[8,10],[10,12],[12,14]],
+    EXTRA_BED_HOURS: 2
+  },
+
+  CARPET: {
+    ROOM_PRICING: [
+      { rooms: 1, price: 45 }, { rooms: 2, price: 65 },
+      { rooms: 3, price: 80 }, { rooms: 4, price: 90 },
+      { rooms: 5, price: 100 },{ rooms: 6, price: 110 }
+    ],
+    EXTRA_ROOM_PRICE: 10,
+    HALL_STAIRS_LANDING: 60,
+    STAIN_PROTECTION: 30,
+    LOADING_CHARGE: 15,
+    SOFA_SEAT_PRICE: 30,
+    ARMCHAIR_PRICE: 45,
+    FOOTSTOOL_PRICE: 10,
+    SOFA_STAIN_PROTECTION: 10,
+    ARMCHAIR_STAIN_PROTECTION: 15
+  },
+
+  PRAM: {
+    STANDARD_PRAM: 75,
+    EXTRA_COMPONENT: 10,
+    CAR_SEAT: 45
+  },
+
+  QUOTE_DISCLAIMER: "This quote is approximate and subject to change following a site visit or further information.",
+
+  SHEET_COLUMNS: ["Date","Lead Source","Clean Type","Name","Postcode","Contact Number","Email","Status","Chased Date","Notes","Quote"]
+};
+  </script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -907,6 +984,17 @@ async function loadLeads() {
   loading.style.display = 'block';
   errorBanner.classList.remove('visible');
 
+  if (typeof CEC_CONFIG === 'undefined') {
+    loading.style.display = 'none';
+    container.style.display = 'block';
+    document.getElementById('leads-empty').style.display = 'block';
+    document.getElementById('leads-tbody').innerHTML = '';
+    countBadge.textContent = '0';
+    document.getElementById('home-error-msg').textContent = 'config.js failed to load — check both files are in the same folder on GitHub';
+    errorBanner.classList.add('visible');
+    return;
+  }
+
   const url = CEC_CONFIG.APPS_SCRIPT_URL;
   if (!url || url === 'YOUR_APPS_SCRIPT_URL_HERE') {
     loading.style.display = 'none';
@@ -920,7 +1008,7 @@ async function loadLeads() {
   }
 
   try {
-const resp = await fetch(url, { redirect: 'follow' });
+    const resp = await fetch(url, { redirect: 'follow' });
     const data = await resp.json();
 
     if (data.error) throw new Error(data.error);
