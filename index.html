@@ -931,7 +931,10 @@ async function loadLeads() {
   }
 
   try {
-    const resp = await fetch(url, { redirect: 'follow' });
+    const resp = await fetch(url + '?t=' + Date.now(), {
+      redirect: 'follow',
+      method: 'GET',
+    });
     const data = await resp.json();
 
     if (data.error) throw new Error(data.error);
@@ -1956,6 +1959,7 @@ async function doSubmit() {
   try {
     await fetch(url, {
       method: 'POST',
+      redirect: 'follow',
       body: JSON.stringify({ action: 'append', data: state.lead }),
     });
     document.getElementById('success-msg').textContent =
