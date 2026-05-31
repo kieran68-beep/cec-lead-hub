@@ -9,7 +9,7 @@ const CEC_CONFIG = {
   // ----------------------------------------------------------
   //  GOOGLE SHEETS
   // ----------------------------------------------------------
-  SHEET_ID: "1PRXReoaS65P9QzwSNC_VW3U4DVu6xbG-QMCO5LOTuI0",
+  SHEET_ID: "1_AxunlP0AUEa0pzAK-8Pq7WFp1ZGy1lWh18m72Dba3E",
 
   // The Google Apps Script Web App URL (you get this after deploying your script)
   // Replace the placeholder below with your actual deployed URL
