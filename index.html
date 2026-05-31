@@ -1014,7 +1014,7 @@ async function loadLeads() {
       active.forEach(lead => {
         const tr = document.createElement('tr');
         const statusOptions = CEC_CONFIG.ALL_STATUSES.map(s =>
-          `<option value="${esc(s)}" ${s === lead.Status ? 'selected' : ''>${esc(s)}</option>`
+          `<option value="${esc(s)}" ${s === lead.Status ? 'selected' : ''}>${esc(s)}</option>`
         ).join('');
         tr.innerHTML = `
           <td><span class="lead-name">${esc(lead.Name || '—')}</span><br><span class="lead-date">${esc(lead['Clean Type'] || '—')}</span></td>
