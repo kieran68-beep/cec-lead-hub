@@ -931,11 +931,7 @@ async function loadLeads() {
   }
 
   try {
-    const resp = await fetch(url + '?t=' + Date.now(), {
-      redirect: 'follow',
-      method: 'GET',
-    });
-    const data = await resp.json();
+    const data = await fetchViaJsonp(url);
 
     if (data.error) throw new Error(data.error);
 
@@ -976,6 +972,35 @@ async function loadLeads() {
     errorBanner.classList.add('visible');
     countBadge.textContent = '0';
   }
+}
+
+function fetchViaJsonp(url) {
+  return new Promise(function(resolve, reject) {
+    const callbackName = 'jsonp_cb_' + Date.now();
+    const script = document.createElement('script');
+    const timeout = setTimeout(function() {
+      cleanup();
+      reject(new Error('Request timed out'));
+    }, 10000);
+
+    function cleanup() {
+      clearTimeout(timeout);
+      delete window[callbackName];
+      if (script.parentNode) script.parentNode.removeChild(script);
+    }
+
+    window[callbackName] = function(data) {
+      cleanup();
+      resolve(data);
+    };
+
+    script.src = url + '?callback=' + callbackName + '&t=' + Date.now();
+    script.onerror = function() {
+      cleanup();
+      reject(new Error('Script load failed'));
+    };
+    document.head.appendChild(script);
+  });
 }
 
 // ════════════════════════════════════════════════
