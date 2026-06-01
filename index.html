@@ -1406,7 +1406,7 @@ function buildCarpetsStep() {
 
         <div class="field">
           <label>How many rooms? <span class="opt">(do not include hall/stairs/landing)</span></label>
-          <input type="number" id="cc-rooms" min="1" value="${saved.rooms||''}" placeholder="e.g. 3" style="max-width:100px;" />
+          <input type="number" id="cc-rooms" min="0" value="${saved.rooms||''}" placeholder="0" style="max-width:100px;" />
         </div>
         <div class="info-box" style="font-size:13px; margin-bottom:12px;">
           <span>ℹ️</span> Hall, stairs &amp; landing is separate and does <strong>not</strong> count as a room.
@@ -1553,11 +1553,8 @@ function buildPramStep() {
       <h3><span class="section-number">1</span> Pram</h3>
 
       <div class="field">
-        <label>Standard pram included? (£${cfg.STANDARD_PRAM})</label>
-        <div class="yesno-group">
-          <button class="yesno-btn ${saved.pram===true?'selected':''}" id="pram-yes" onclick="pramToggle(true)">Yes</button>
-          <button class="yesno-btn ${saved.pram===false?'selected':''}" id="pram-no" onclick="pramToggle(false)">No</button>
-        </div>
+        <label>How many standard prams? (£${cfg.STANDARD_PRAM} each)</label>
+        <input type="number" id="pram-count" min="0" value="${saved.pramCount||0}" placeholder="0" style="max-width:100px;" />
       </div>
 
       <div class="field">
@@ -1698,7 +1695,7 @@ function validateAndSaveStep(service) {
 
   if (service === 'Pram/Car Seat') {
     const s = state.wizardAnswers['Pram/Car Seat'] || {};
-    if (s.pram === undefined) { alert('Please answer the pram question.'); return false; }
+    s.pramCount = parseInt(document.getElementById('pram-count')?.value) || 0;
     if (s.hasExtras === undefined) { alert('Please answer the extra components question.'); return false; }
     if (s.hasExtras) {
       const ec = parseInt(document.getElementById('pram-extras')?.value);
@@ -1748,7 +1745,7 @@ function calcOven() {
 
   // Minimum callout
   if (total < CEC_CONFIG.MIN_CALLOUT) {
-    lines.push({ label: 'Minimum callout adjustment', price: CEC_CONFIG.MIN_CALLOUT - total });
+    lines.push({ label: 'Minimum callout applied', price: CEC_CONFIG.MIN_CALLOUT - total, minCallout: true });
     total = CEC_CONFIG.MIN_CALLOUT;
   }
 
@@ -1799,7 +1796,7 @@ function calcCarpets() {
   let uphTotal    = 0;
 
   // ---- Carpet section ----
-  if (!s.carpetCommercial && s.rooms > 0) {
+  if (!s.carpetCommercial && (s.rooms > 0 || s.hsl)) {
     // Count total rooms (singles + double rooms * 2)
     let normalRooms = s.rooms;
     let doubleRooms = s.hasDoubles ? (s.doubleCount || 0) : 0;
@@ -1837,7 +1834,7 @@ function calcCarpets() {
     // Minimum callout on carpet only
     if (carpetTotal < CEC_CONFIG.MIN_CALLOUT && carpetTotal > 0) {
       const adj = CEC_CONFIG.MIN_CALLOUT - carpetTotal;
-      lines.push({ label: 'Minimum callout adjustment', price: adj });
+      lines.push({ label: 'Minimum callout applied', price: adj, minCallout: true });
       carpetTotal = CEC_CONFIG.MIN_CALLOUT;
     }
   } else if (s.carpetCommercial) {
@@ -1893,7 +1890,11 @@ function calcPram() {
   const lines = [];
   let total = 0;
 
-  if (s.pram) { lines.push({ label: 'Standard pram', price: cfg.STANDARD_PRAM }); total += cfg.STANDARD_PRAM; }
+  if (s.pramCount > 0) {
+    const cost = s.pramCount * cfg.STANDARD_PRAM;
+    lines.push({ label: `Standard pram${s.pramCount > 1 ? 's' : ''} × ${s.pramCount}`, price: cost });
+    total += cost;
+  }
   if (s.hasExtras && s.extraCount > 0) {
     const cost = s.extraCount * cfg.EXTRA_COMPONENT;
     lines.push({ label: `Extra component${s.extraCount > 1 ? 's' : ''} × ${s.extraCount}`, price: cost });
@@ -1964,6 +1965,11 @@ function buildQuoteOutput() {
       } else if (line.price === 0 && line.note) {
         html += `<div class="quote-line"><span>${esc(line.label)}</span><span style="color:var(--teal)">FREE</span></div>
           <div class="quote-free-note" style="display:inline-flex; margin-bottom:4px;">🎉 ${esc(line.note)}</div>`;
+      } else if (line.minCallout) {
+        html += `<div class="quote-line"><span>${esc(line.label)}</span><span>£${fmt(line.price)}</span></div>
+          <div class="info-box" style="font-size:12px; margin:4px 0 8px;">
+            💡 <span>Our minimum callout is £${CEC_CONFIG.MIN_CALLOUT}. Adding more cleaning could make this better value — worth mentioning to the client!</span>
+          </div>`;
       } else if (line.price !== null) {
         html += `<div class="quote-line"><span>${esc(line.label)}</span><span>£${fmt(line.price)}</span></div>`;
       }
@@ -1982,9 +1988,9 @@ function buildQuoteOutput() {
 
   // Grand total
   if (hasRange) {
-    html += `<div class="quote-total-row"><span>Estimated total</span><span>£${fmt(overallTotal + rangeMin)}–£${fmt(overallTotal + rangeMax)}</span></div>`;
+    html += `<div class="quote-total-row"><span>Estimated total<br><small style="font-weight:400;opacity:.75;font-size:12px;">All prices inc. VAT unless stated</small></span><span>£${fmt(overallTotal + rangeMin)}–£${fmt(overallTotal + rangeMax)}</span></div>`;
   } else {
-    html += `<div class="quote-total-row"><span>Total</span><span>£${fmt(overallTotal)}</span></div>`;
+    html += `<div class="quote-total-row"><span>Total<br><small style="font-weight:400;opacity:.75;font-size:12px;">All prices inc. VAT unless stated</small></span><span>£${fmt(overallTotal)}</span></div>`;
   }
 
   html += `<div class="quote-disclaimer">⚠️ ${esc(CEC_CONFIG.QUOTE_DISCLAIMER)}</div>
