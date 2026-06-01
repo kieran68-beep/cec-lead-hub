@@ -109,12 +109,12 @@ const CEC_CONFIG = {
   CARPET: {
     // Pricing per number of rooms
     ROOM_PRICING: [
-      { rooms: 1, price: 45 },
-      { rooms: 2, price: 65 },
-      { rooms: 3, price: 80 },
-      { rooms: 4, price: 90 },
-      { rooms: 5, price: 100 },
-      { rooms: 6, price: 110 }
+      { rooms: 1, price: 40 },
+      { rooms: 2, price: 80 },
+      { rooms: 3, price: 120 },
+      { rooms: 4, price: 150 },
+      { rooms: 5, price: 170 },
+      { rooms: 6, price: 180 }
       // Beyond 6: add £10 per room (handled in code)
     ],
     EXTRA_ROOM_PRICE: 10,       // Per room beyond the table above
