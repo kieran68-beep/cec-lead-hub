@@ -1807,18 +1807,23 @@ function calcCarpets() {
     let effectiveRooms = (normalRooms - doubleRooms) + (doubleRooms * 2);
 
     // Get price from table
-    let roomPrice;
-    const table = cfg.ROOM_PRICING;
-    if (effectiveRooms <= table[table.length-1].rooms) {
-      const entry = table.find(r => r.rooms === effectiveRooms) ||
-                    table.reduce((best, r) => (r.rooms <= effectiveRooms && r.rooms > (best?.rooms||0)) ? r : best, null);
-      roomPrice = entry ? entry.price : table[table.length-1].price + (effectiveRooms - table[table.length-1].rooms) * cfg.EXTRA_ROOM_PRICE;
-    } else {
-      roomPrice = table[table.length-1].price + (effectiveRooms - table[table.length-1].rooms) * cfg.EXTRA_ROOM_PRICE;
-    }
+let normalRooms = s.rooms || 0;
+let doubleRooms = s.hasDoubles ? (s.doubleCount || 0) : 0;
+let effectiveRooms = (normalRooms - doubleRooms) + (doubleRooms * 2);
 
-    lines.push({ label: `${effectiveRooms} room${effectiveRooms !== 1 ? 's' : ''}${doubleRooms > 0 ? ` (inc. ${doubleRooms} double)` : ''}`, price: roomPrice });
-    carpetTotal += roomPrice;
+if (effectiveRooms > 0) {
+  let roomPrice;
+  const table = cfg.ROOM_PRICING;
+  if (effectiveRooms <= table[table.length-1].rooms) {
+    const entry = table.find(r => r.rooms === effectiveRooms) ||
+                  table.reduce((best, r) => (r.rooms <= effectiveRooms && r.rooms > (best?.rooms||0)) ? r : best, null);
+    roomPrice = entry ? entry.price : table[table.length-1].price + (effectiveRooms - table[table.length-1].rooms) * cfg.EXTRA_ROOM_PRICE;
+  } else {
+    roomPrice = table[table.length-1].price + (effectiveRooms - table[table.length-1].rooms) * cfg.EXTRA_ROOM_PRICE;
+  }
+  lines.push({ label: `${effectiveRooms} room${effectiveRooms !== 1 ? 's' : ''}${doubleRooms > 0 ? ` (inc. ${doubleRooms} double)` : ''}`, price: roomPrice });
+  carpetTotal += roomPrice;
+}
 
     if (s.hsl) { lines.push({ label: 'Hall, stairs & landing', price: cfg.HALL_STAIRS_LANDING }); carpetTotal += cfg.HALL_STAIRS_LANDING; }
     if (s.carpetStain && s.stainRooms > 0) {
