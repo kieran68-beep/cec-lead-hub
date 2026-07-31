@@ -2054,20 +2054,23 @@ function calcPram() {
 //  QUOTE OUTPUT
 // ════════════════════════════════════════════════
 function buildQuoteOutput() {
-  // Calculate all services
+  // Calculate quoted services only (referrals have no price contribution)
   state.quoteLines = {};
 
   let overallTotal = 0;
   let hasRange = false;
   let rangeMin = 0, rangeMax = 0;
 
-  state.services.forEach(svc => {
+  const quotedServices = state.services.filter(svc => !state.referredServices.includes(svc));
+
+  quotedServices.forEach(svc => {
     if (svc === 'Oven')              state.quoteLines[svc] = calcOven();
     else if (svc === 'Deep Clean')   state.quoteLines[svc] = calcDeepClean();
     else if (svc === 'Carpets/Upholstery') state.quoteLines[svc] = calcCarpets();
     else if (svc === 'Pram/Car Seat') state.quoteLines[svc] = calcPram();
 
     const q = state.quoteLines[svc];
+    if (!q) return;
     if (q.isRange) {
       hasRange = true;
       rangeMin += q.rangeMin || 0;
@@ -2085,7 +2088,7 @@ function buildQuoteOutput() {
     </div>
     <div class="quote-body">`;
 
-  state.services.forEach(svc => {
+  quotedServices.forEach(svc => {
     const q = state.quoteLines[svc];
     if (!q) return;
 
@@ -2119,9 +2122,25 @@ function buildQuoteOutput() {
     html += `</div>`;
   });
 
+  // Referred services (mixed quote + referral case only)
+  if (state.referredServices.length > 0) {
+    state.referredServices.forEach(svc => {
+      const notes = (state.wizardAnswers[svc]?.referNotes || '').trim();
+      html += `<div class="quote-service">
+        <div class="quote-service-name">${esc(svc)}</div>
+        <div class="quote-line"><span></span><span style="color:var(--red); font-weight:500;">Refer to Kieran</span></div>`;
+      if (notes) {
+        html += `<div style="font-size:12px; color:var(--gray-600); margin-top:8px; padding:8px 10px; background:var(--gray-50); border-radius:var(--radius);">
+          <strong>Notes for Kieran:</strong><br>${esc(notes)}
+        </div>`;
+      }
+      html += `</div>`;
+    });
+  }
+
   html += `</div>`;
 
-  // Grand total
+  // Grand total (quoted services only)
   if (hasRange) {
     html += `<div class="quote-total-row"><span>Estimated total<br><small style="font-weight:400;opacity:.75;font-size:12px;">All prices inc. VAT unless stated</small></span><span>£${fmt(overallTotal + rangeMin)}–£${fmt(overallTotal + rangeMax)}</span></div>`;
   } else {
@@ -2153,7 +2172,7 @@ function buildQuoteText() {
   let overallTotal = 0;
   let isRange = false;
 
-  state.services.forEach(svc => {
+  Object.keys(state.quoteLines).forEach(svc => {
     const q = state.quoteLines[svc];
     if (!q) return;
     text += `${svc.toUpperCase()}\n`;
@@ -2171,6 +2190,16 @@ function buildQuoteText() {
     }
     text += '\n';
   });
+
+  if (state.referredServices.length > 0) {
+    state.referredServices.forEach(svc => {
+      const notes = (state.wizardAnswers[svc]?.referNotes || '').trim();
+      text += `${svc.toUpperCase()}\n`;
+      text += `  Refer to Kieran\n`;
+      if (notes) text += `  Notes for Kieran: ${notes}\n`;
+      text += '\n';
+    });
+  }
 
   text += `TOTAL: ${isRange ? 'Est. ' : ''}£${fmt(overallTotal)}\n`;
   text += `\n${CEC_CONFIG.QUOTE_DISCLAIMER}`;
