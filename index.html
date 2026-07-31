@@ -2109,6 +2109,7 @@ function clearForm() {
   state.quoteLines = {};
   document.getElementById('quote-yes-btn').classList.remove('selected');
   document.getElementById('quote-no-btn').classList.remove('selected');
+  setQuoteNeeded(true);
 }
 
 function resetAndHome() {
