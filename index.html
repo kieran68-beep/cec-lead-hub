@@ -775,7 +775,10 @@
   </div>
 
   <div class="sticky-footer">
-    <button class="btn btn-ghost" onclick="showPage('home')">Cancel</button>
+    <div style="display:flex; gap:10px;">
+      <button class="btn btn-ghost" onclick="showPage('home')">Cancel</button>
+      <button class="btn btn-ghost" onclick="clearForm()">Clear form</button>
+    </div>
     <div class="sticky-footer-right">
       <button class="btn btn-primary" id="capture-next-btn" onclick="handleCaptureNext()">
         Continue →
@@ -1103,11 +1106,10 @@ function initCapturePage() {
     ).join('');
   }
 
-  // Reset quote question
-  state.quoteNeeded = null;
-  state.quoteNeededSet = false;
-  document.getElementById('quote-yes-btn').classList.remove('selected');
-  document.getElementById('quote-no-btn').classList.remove('selected');
+  // Default quote question to yes if not yet answered
+  if (!state.quoteNeededSet) {
+    setQuoteNeeded(true);
+  }
 }
 
 function toggleChip(el, val) {
@@ -2090,7 +2092,7 @@ async function doSubmit() {
   }
 }
 
-function resetAndHome() {
+function clearForm() {
   // Reset form
   document.getElementById('f-name').value = '';
   document.getElementById('f-postcode').value = '';
@@ -2105,6 +2107,12 @@ function resetAndHome() {
   state.services = [];
   state.wizardAnswers = {};
   state.quoteLines = {};
+  document.getElementById('quote-yes-btn').classList.remove('selected');
+  document.getElementById('quote-no-btn').classList.remove('selected');
+}
+
+function resetAndHome() {
+  clearForm();
   showPage('home');
 }
 
