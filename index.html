@@ -803,31 +803,11 @@
         </div>
       </div>
 
-      <div class="inline-row">
-        <div class="field">
-          <label>Status</label>
-          <select id="f-status"></select>
-        </div>
-        <div class="field">
-          <label>Chased Date <span class="opt">(optional)</span></label>
-          <input type="date" id="f-chased" />
-        </div>
-      </div>
-
       <div class="field">
         <label>Notes <span class="opt">(optional)</span></label>
         <textarea id="f-notes" placeholder="Any extra information…"></textarea>
       </div>
 
-    </div>
-
-    <!-- Quote question -->
-    <div class="section-card" id="quote-question-card">
-      <h3 style="font-size:15px; margin-bottom:12px;">Does this lead require a quote?</h3>
-      <div class="yesno-group">
-        <button class="yesno-btn" id="quote-yes-btn" onclick="setQuoteNeeded(true)">✓ Yes, build a quote</button>
-        <button class="yesno-btn" id="quote-no-btn" onclick="setQuoteNeeded(false)">✕ No, submit now</button>
-      </div>
     </div>
 
   </div>
@@ -912,8 +892,6 @@
 //  APP STATE
 // ════════════════════════════════════════════════
 const state = {
-  quoteNeeded: null,
-  quoteNeededSet: false,
   // Lead form data
   lead: {},
   // Wizard
@@ -1149,10 +1127,6 @@ function initCapturePage() {
   if (!sourceEl.querySelector('option')) {
     sourceEl.innerHTML = CEC_CONFIG.LEAD_SOURCES.map(s => `<option>${s}</option>`).join('');
   }
-  const statusEl = document.getElementById('f-status');
-  if (!statusEl.querySelector('option')) {
-    statusEl.innerHTML = CEC_CONFIG.ALL_STATUSES.map(s => `<option>${s}</option>`).join('');
-  }
 
   // Clean type chips
   const chips = document.getElementById('clean-type-chips');
@@ -1162,11 +1136,6 @@ function initCapturePage() {
         <span class="check">✓</span> ${ct}
       </div>`
     ).join('');
-  }
-
-  // Default quote question to yes if not yet answered
-  if (!state.quoteNeededSet) {
-    setQuoteNeeded(true);
   }
 }
 
@@ -1179,13 +1148,6 @@ function getSelectedChips() {
     .map(c => c.dataset.value);
 }
 
-function setQuoteNeeded(val) {
-  state.quoteNeeded = val;
-  state.quoteNeededSet = true;
-  document.getElementById('quote-yes-btn').classList.toggle('selected', val === true);
-  document.getElementById('quote-no-btn').classList.toggle('selected', val === false);
-}
-
 function gatherLeadData() {
   return {
     Date:             document.getElementById('f-date').value,
@@ -1195,8 +1157,8 @@ function gatherLeadData() {
     Postcode:         document.getElementById('f-postcode').value,
     'Contact Number': document.getElementById('f-phone').value,
     Email:            document.getElementById('f-email').value,
-    Status:           document.getElementById('f-status').value,
-    'Chased Date':    document.getElementById('f-chased').value,
+    Status:           'Quoted',
+    'Chased Date':    '',
     Notes:            document.getElementById('f-notes').value,
     Quote:            ''
   };
@@ -1206,34 +1168,17 @@ function validateCapture() {
   const data = gatherLeadData();
   if (!data.Name.trim()) { alert('Please enter the client name.'); return false; }
   if (!data['Clean Type']) { alert('Please select at least one clean type.'); return false; }
-  if (!state.quoteNeededSet) { alert('Please choose whether this lead requires a quote.'); return false; }
   return true;
 }
 
 function handleCaptureNext() {
   if (!validateCapture()) return;
   state.lead = gatherLeadData();
-
-  // Determine services that have a quoting wizard
-  const QUOTABLE = ['Oven', 'Carpets/Upholstery', 'Deep Clean', 'Pram/Car Seat'];
-  const selected = getSelectedChips();
-
-  if (state.quoteNeeded) {
-    // Filter to quotable services
-    state.services = selected.filter(s => QUOTABLE.includes(s));
-    state.wizardAnswers = {};
-    state.quoteLines = {};
-    state.wizardStep = 0;
-
-    if (state.services.length === 0) {
-      // No quotable services selected, just submit
-      submitLeadDirect();
-    } else {
-      showPage('wizard');
-    }
-  } else {
-    submitLeadDirect();
-  }
+  state.services = getSelectedChips();
+  state.wizardAnswers = {};
+  state.quoteLines = {};
+  state.wizardStep = 0;
+  showPage('wizard');
 }
 
 // ════════════════════════════════════════════════
@@ -2157,17 +2102,11 @@ function clearForm() {
   document.getElementById('f-phone').value = '';
   document.getElementById('f-email').value = '';
   document.getElementById('f-notes').value = '';
-  document.getElementById('f-chased').value = '';
   document.querySelectorAll('#clean-type-chips .chip').forEach(c => c.classList.remove('selected'));
-  state.quoteNeeded = null;
-  state.quoteNeededSet = false;
   state.lead = {};
   state.services = [];
   state.wizardAnswers = {};
   state.quoteLines = {};
-  document.getElementById('quote-yes-btn').classList.remove('selected');
-  document.getElementById('quote-no-btn').classList.remove('selected');
-  setQuoteNeeded(true);
 }
 
 function resetAndHome() {
