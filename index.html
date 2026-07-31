@@ -861,6 +861,23 @@
       <p>Review the quote before submitting</p>
     </div>
     <div id="quote-output"></div>
+
+    <div class="section-card" style="margin-top:20px;">
+      <div class="inline-row">
+        <div class="field">
+          <label>Status</label>
+          <select id="q-status"></select>
+        </div>
+        <div class="field">
+          <label>Chased Date <span class="opt">(optional)</span></label>
+          <input type="date" id="q-chased" />
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label>Notes <span class="opt">(optional)</span></label>
+        <textarea id="q-notes" placeholder="Outcome, next steps…"></textarea>
+      </div>
+    </div>
   </div>
 
   <div class="sticky-footer">
@@ -1149,6 +1166,12 @@ function getSelectedChips() {
 }
 
 function gatherLeadData() {
+  const captureNotes = (document.getElementById('f-notes')?.value || '').trim();
+  const quoteNotes   = (document.getElementById('q-notes')?.value || '').trim();
+  let notes = captureNotes;
+  if (captureNotes && quoteNotes) notes = captureNotes + '\n' + quoteNotes;
+  else if (quoteNotes) notes = quoteNotes;
+
   return {
     Date:             document.getElementById('f-date').value,
     'Lead Source':    document.getElementById('f-source').value,
@@ -1157,9 +1180,9 @@ function gatherLeadData() {
     Postcode:         document.getElementById('f-postcode').value,
     'Contact Number': document.getElementById('f-phone').value,
     Email:            document.getElementById('f-email').value,
-    Status:           'Quoted',
-    'Chased Date':    '',
-    Notes:            document.getElementById('f-notes').value,
+    Status:           document.getElementById('q-status')?.value || 'Quoted',
+    'Chased Date':    document.getElementById('q-chased')?.value || '',
+    Notes:            notes,
     Quote:            ''
   };
 }
@@ -2022,6 +2045,17 @@ function buildQuoteOutput() {
 
   document.getElementById('quote-output').innerHTML = html;
 
+  // Populate status dropdown and default to Quoted
+  const statusEl = document.getElementById('q-status');
+  if (statusEl) {
+    if (!statusEl.querySelector('option')) {
+      statusEl.innerHTML = CEC_CONFIG.ALL_STATUSES.map(s =>
+        `<option value="${esc(s)}">${esc(s)}</option>`
+      ).join('');
+    }
+    statusEl.value = 'Quoted';
+  }
+
   // Save quote text to lead
   state.lead.Quote = buildQuoteText();
 }
@@ -2067,6 +2101,9 @@ async function submitLead() {
   const btn = document.getElementById('submit-btn');
   btn.innerHTML = '<span class="spinner"></span> Saving…';
   btn.disabled = true;
+  const quote = state.lead.Quote || '';
+  state.lead = gatherLeadData();
+  state.lead.Quote = quote;
   await doSubmit();
   btn.innerHTML = 'Submit & Save';
   btn.disabled = false;
@@ -2103,6 +2140,19 @@ function clearForm() {
   document.getElementById('f-email').value = '';
   document.getElementById('f-notes').value = '';
   document.querySelectorAll('#clean-type-chips .chip').forEach(c => c.classList.remove('selected'));
+  const qStatus = document.getElementById('q-status');
+  if (qStatus) {
+    if (!qStatus.querySelector('option')) {
+      qStatus.innerHTML = CEC_CONFIG.ALL_STATUSES.map(s =>
+        `<option value="${esc(s)}">${esc(s)}</option>`
+      ).join('');
+    }
+    qStatus.value = 'Quoted';
+  }
+  const qChased = document.getElementById('q-chased');
+  if (qChased) qChased.value = '';
+  const qNotes = document.getElementById('q-notes');
+  if (qNotes) qNotes.value = '';
   state.lead = {};
   state.services = [];
   state.wizardAnswers = {};
