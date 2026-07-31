@@ -209,10 +209,46 @@
     .empty-state p { font-size: 14px; }
 
     .loading-state {
-      padding: 32px 20px;
-      text-align: center;
-      color: var(--gray-400);
-      font-size: 14px;
+      padding: 0;
+    }
+
+    .skeleton-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .skeleton-table td {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--gray-100);
+      vertical-align: middle;
+    }
+    .skeleton-table tr:last-child td { border-bottom: none; }
+    .skeleton-block {
+      display: block;
+      background: var(--gray-200);
+      border-radius: 6px;
+      animation: skeleton-pulse 1.4s ease-in-out infinite;
+    }
+    .skeleton-name {
+      width: 55%;
+      height: 14px;
+      margin-bottom: 8px;
+    }
+    .skeleton-service {
+      width: 40%;
+      height: 10px;
+    }
+    .skeleton-status {
+      width: 90px;
+      height: 22px;
+      border-radius: 20px;
+    }
+    .skeleton-date {
+      width: 72px;
+      height: 12px;
+    }
+    @keyframes skeleton-pulse {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
     }
 
     .error-banner {
@@ -647,8 +683,30 @@
       </div>
 
       <div id="leads-loading" class="loading-state">
-        <div class="spinner spinner-teal" style="display:inline-block; margin-right:8px;"></div>
-        Loading leads…
+        <table class="skeleton-table" aria-hidden="true">
+          <tbody>
+            <tr>
+              <td><span class="skeleton-block skeleton-name"></span><span class="skeleton-block skeleton-service"></span></td>
+              <td><span class="skeleton-block skeleton-status"></span></td>
+              <td><span class="skeleton-block skeleton-date"></span></td>
+            </tr>
+            <tr>
+              <td><span class="skeleton-block skeleton-name"></span><span class="skeleton-block skeleton-service"></span></td>
+              <td><span class="skeleton-block skeleton-status"></span></td>
+              <td><span class="skeleton-block skeleton-date"></span></td>
+            </tr>
+            <tr>
+              <td><span class="skeleton-block skeleton-name"></span><span class="skeleton-block skeleton-service"></span></td>
+              <td><span class="skeleton-block skeleton-status"></span></td>
+              <td><span class="skeleton-block skeleton-date"></span></td>
+            </tr>
+            <tr>
+              <td><span class="skeleton-block skeleton-name"></span><span class="skeleton-block skeleton-service"></span></td>
+              <td><span class="skeleton-block skeleton-status"></span></td>
+              <td><span class="skeleton-block skeleton-date"></span></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       <div id="leads-container" style="display:none;">
