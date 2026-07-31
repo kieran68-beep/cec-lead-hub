@@ -1592,7 +1592,7 @@ function buildPramStep() {
       <div id="cs-count-input" style="display:${saved.carSeat ? 'block':'none'}; margin-top:8px;">
         <div class="field" style="margin-bottom:0">
           <label>How many car seats?</label>
-          <input type="number" id="cs-count" min="1" value="${saved.carSeatCount||''}" placeholder="1" style="max-width:100px;" />
+          <input type="number" id="cs-count" min="1" value="${saved.carSeatCount||1}" placeholder="1" style="max-width:100px;" />
         </div>
       </div>
     </div>
@@ -1628,6 +1628,12 @@ function carSeatToggle(val) {
   document.getElementById('cs-yes').classList.toggle('selected', val);
   document.getElementById('cs-no').classList.toggle('selected', !val);
   document.getElementById('cs-count-input').style.display = val ? 'block' : 'none';
+  if (val) {
+    const countEl = document.getElementById('cs-count');
+    if (countEl && (!countEl.value || countEl.value === '0')) {
+      countEl.value = 1;
+    }
+  }
 }
 
 // ════════════════════════════════════════════════
@@ -1757,11 +1763,6 @@ function calcOven() {
       total += t.price;
     }
   });
-
-  // Combi-only minimum
-  if (s.types.length === 1 && s.types[0] === 'combi') {
-    total = Math.max(total, CEC_CONFIG.MIN_CALLOUT);
-  }
 
   if (s.hob) { lines.push({ label: 'Hob clean', price: cfg.HOB_ADDON }); total += cfg.HOB_ADDON; }
   if (s.extractor) { lines.push({ label: 'Extractor clean', price: cfg.EXTRACTOR_ADDON }); total += cfg.EXTRACTOR_ADDON; }
