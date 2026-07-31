@@ -892,6 +892,52 @@
 
 
 <!-- ════════════════════════════════════════════════
+     PAGE: REFER TO KIERAN
+════════════════════════════════════════════════ -->
+<div id="page-refer" class="page">
+  <div class="form-wrap">
+    <div class="step-header">
+      <button class="step-back" onclick="showPage('wizard')">← Back</button>
+      <h1>Refer to Kieran</h1>
+      <p>These services need to be referred rather than quoted</p>
+    </div>
+
+    <div class="section-card">
+      <h3 style="margin-bottom:12px;">Services to refer</h3>
+      <ul id="refer-services-list" style="padding-left:20px; margin-bottom:12px; color:var(--gray-800);"></ul>
+      <div id="refer-wizard-notes"></div>
+    </div>
+
+    <div class="section-card">
+      <div class="inline-row">
+        <div class="field">
+          <label>Status</label>
+          <select id="r-status"></select>
+        </div>
+        <div class="field">
+          <label>Chased Date <span class="opt">(optional)</span></label>
+          <input type="date" id="r-chased" />
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label>Notes <span class="opt">(optional)</span></label>
+        <textarea id="r-notes" placeholder="Any additional info…"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="sticky-footer">
+    <button class="btn btn-ghost" onclick="showPage('wizard')">← Back</button>
+    <div class="sticky-footer-right">
+      <button class="btn btn-primary" id="refer-submit-btn" onclick="submitReferral()">
+        Submit & Save
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════
      PAGE: SUCCESS
 ════════════════════════════════════════════════ -->
 <div id="page-success" class="page">
@@ -916,6 +962,7 @@ const state = {
   wizardStep: 0,
   wizardAnswers: {},  // keyed by service id
   quoteLines: {},     // computed quote breakdown per service
+  referredServices: [],
 };
 
 // ════════════════════════════════════════════════
@@ -931,6 +978,7 @@ function showPage(id) {
     capture: 'New Lead',
     wizard: 'Quote Wizard',
     quote: 'Quote Summary',
+    refer: 'Refer to Kieran',
     success: 'Done'
   };
   document.getElementById('topbar-title').textContent = titles[id] || 'Lead Hub';
@@ -938,6 +986,7 @@ function showPage(id) {
   if (id === 'home') loadLeads();
   if (id === 'capture') initCapturePage();
   if (id === 'wizard') startWizard();
+  if (id === 'refer') populateReferPage();
 }
 
 // ════════════════════════════════════════════════
@@ -1201,6 +1250,7 @@ function handleCaptureNext() {
   state.wizardAnswers = {};
   state.quoteLines = {};
   state.wizardStep = 0;
+  state.referredServices = [];
   showPage('wizard');
 }
 
@@ -1242,9 +1292,15 @@ function wizardNext() {
     renderWizardStep();
     window.scrollTo(0, 0);
   } else {
-    // All done — build quote output
-    buildQuoteOutput();
-    showPage('quote');
+    // All done — route based on referral outcome
+    const allReferred = state.services.length > 0 &&
+      state.referredServices.length === state.services.length;
+    if (allReferred) {
+      showPage('refer');
+    } else {
+      buildQuoteOutput();
+      showPage('quote');
+    }
   }
 }
 
@@ -1329,6 +1385,12 @@ function buildDeepCleanStep() {
         <div id="dc-refer" class="refer-box" style="display:${saved.residentialManaged === false ? 'block' : 'none'}">
           Please refer to Kieran
         </div>
+        <div id="dc-refer-notes-wrap" style="display:${saved.residentialManaged === false ? 'block' : 'none'}; margin-top:12px;">
+          <div class="field" style="margin-bottom:0">
+            <label>Notes for Kieran <span class="opt">(optional)</span></label>
+            <textarea id="dc-refer-notes" placeholder="Any useful details…">${esc(saved.referNotes || '')}</textarea>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1373,6 +1435,8 @@ function dcSetResManaged(val) {
   document.getElementById('dc-res-yes').classList.toggle('selected', val);
   document.getElementById('dc-res-no').classList.toggle('selected', !val);
   document.getElementById('dc-refer').style.display = !val ? 'block' : 'none';
+  const notesWrap = document.getElementById('dc-refer-notes-wrap');
+  if (notesWrap) notesWrap.style.display = !val ? 'block' : 'none';
   document.getElementById('dc-beds-card').style.display = val ? 'block' : 'none';
 }
 
@@ -1420,6 +1484,12 @@ function buildCarpetsStep() {
           <button class="yesno-btn ${saved.carpetCommercial === true ? 'selected':''}" id="cc-commercial" onclick="ccSetCommercial(true)">Commercial</button>
         </div>
         <div id="cc-refer" class="refer-box" style="margin-top:12px; display:${saved.carpetCommercial ? 'block' : 'none'}">Please refer to Kieran</div>
+        <div id="cc-refer-notes-wrap" style="display:${saved.carpetCommercial ? 'block' : 'none'}; margin-top:12px;">
+          <div class="field" style="margin-bottom:0">
+            <label>Notes for Kieran <span class="opt">(optional)</span></label>
+            <textarea id="cc-refer-notes" placeholder="Any useful details…">${esc(saved.referNotes || '')}</textarea>
+          </div>
+        </div>
       </div>
 
       <div id="cc-main" style="display:${saved.carpetCommercial === false ? 'block' : 'none'}">
@@ -1535,6 +1605,8 @@ function ccSetCommercial(val) {
   document.getElementById('cc-domestic').classList.toggle('selected', !val);
   document.getElementById('cc-commercial').classList.toggle('selected', val);
   document.getElementById('cc-refer').style.display = val ? 'block' : 'none';
+  const notesWrap = document.getElementById('cc-refer-notes-wrap');
+  if (notesWrap) notesWrap.style.display = val ? 'block' : 'none';
   document.getElementById('cc-main').style.display  = !val ? 'block' : 'none';
 }
 
@@ -1667,6 +1739,11 @@ function carSeatToggle(val) {
 // ════════════════════════════════════════════════
 //  STEP VALIDATION + STATE SAVE
 // ════════════════════════════════════════════════
+function updateReferralList(service, isReferral) {
+  state.referredServices = state.referredServices.filter(s => s !== service);
+  if (isReferral) state.referredServices.push(service);
+}
+
 function validateAndSaveStep(service) {
   if (service === 'Oven') {
     const types = [...document.querySelectorAll('#oven-types .chip.selected')].map(c => c.dataset.value);
@@ -1678,6 +1755,7 @@ function validateAndSaveStep(service) {
     if (!hobSet) { alert('Please answer the hob clean question.'); return false; }
     if (!extSet) { alert('Please answer the extractor clean question.'); return false; }
     state.wizardAnswers['Oven'] = { types, hob, extractor };
+    updateReferralList('Oven', false);
     return true;
   }
 
@@ -1687,13 +1765,18 @@ function validateAndSaveStep(service) {
     if (s.commercial && s.residentialManaged === undefined) { alert('Please answer the residential managed question.'); return false; }
     if (s.commercial && s.residentialManaged === false) {
       // Refer to Kieran — skip quoting, mark as referral
-      state.wizardAnswers['Deep Clean'] = { ...s, referKieran: true };
+      const referNotes = document.getElementById('dc-refer-notes')?.value || '';
+      state.wizardAnswers['Deep Clean'] = { ...s, referKieran: true, referNotes };
+      updateReferralList('Deep Clean', true);
       return true;
     }
     const beds = parseInt(document.getElementById('dc-beds')?.value);
     if (!beds || beds < 1) { alert('Please enter the number of bedrooms.'); return false; }
     s.beds = beds;
+    s.referKieran = false;
+    s.referNotes = '';
     state.wizardAnswers['Deep Clean'] = s;
+    updateReferralList('Deep Clean', false);
     return true;
   }
 
@@ -1728,6 +1811,9 @@ function validateAndSaveStep(service) {
         if (!sr || sr < 1) { alert('Please enter how many rooms need stain protection.'); return false; }
         s.stainRooms = sr;
       }
+      s.referNotes = '';
+    } else {
+      s.referNotes = document.getElementById('cc-refer-notes')?.value || '';
     }
 
     // Upholstery
@@ -1747,6 +1833,7 @@ function validateAndSaveStep(service) {
     s.chairStain = document.getElementById('asp-yes')?.classList.contains('selected') || false;
 
     state.wizardAnswers['Carpets/Upholstery'] = s;
+    updateReferralList('Carpets/Upholstery', !!s.carpetCommercial);
     return true;
   }
 
@@ -1766,6 +1853,7 @@ function validateAndSaveStep(service) {
       s.carSeatCount = cc;
     }
     state.wizardAnswers['Pram/Car Seat'] = s;
+    updateReferralList('Pram/Car Seat', false);
     return true;
   }
 
@@ -2104,6 +2192,66 @@ async function submitLead() {
   const quote = state.lead.Quote || '';
   state.lead = gatherLeadData();
   state.lead.Quote = quote;
+  const wizardReferNotes = state.referredServices.map(svc => {
+    const notes = (state.wizardAnswers[svc]?.referNotes || '').trim();
+    return notes ? `${svc}: ${notes}` : '';
+  }).filter(Boolean).join('\n');
+  if (wizardReferNotes) {
+    state.lead.Notes = joinNotes(state.lead.Notes, wizardReferNotes);
+  }
+  await doSubmit();
+  btn.innerHTML = 'Submit & Save';
+  btn.disabled = false;
+}
+
+function populateReferPage() {
+  const list = document.getElementById('refer-services-list');
+  list.innerHTML = state.referredServices.map(s => `<li>${esc(s)}</li>`).join('');
+
+  const notesEl = document.getElementById('refer-wizard-notes');
+  const noteBlocks = state.referredServices.map(svc => {
+    const notes = (state.wizardAnswers[svc]?.referNotes || '').trim();
+    if (!notes) return '';
+    return `<div class="info-box" style="margin-top:8px;"><span>📝</span><span><strong>${esc(svc)}:</strong> ${esc(notes)}</span></div>`;
+  }).filter(Boolean);
+  notesEl.innerHTML = noteBlocks.length
+    ? noteBlocks.join('')
+    : '<p class="hint">No referral notes captured in the wizard.</p>';
+
+  const statusEl = document.getElementById('r-status');
+  if (statusEl && !statusEl.querySelector('option')) {
+    statusEl.innerHTML = CEC_CONFIG.ALL_STATUSES.map(s =>
+      `<option value="${esc(s)}">${esc(s)}</option>`
+    ).join('');
+  }
+  if (statusEl) statusEl.value = 'Waiting Reply';
+}
+
+function joinNotes(...parts) {
+  return parts.map(p => (p || '').trim()).filter(Boolean).join('\n');
+}
+
+async function submitReferral() {
+  const btn = document.getElementById('refer-submit-btn');
+  btn.innerHTML = '<span class="spinner"></span> Saving…';
+  btn.disabled = true;
+
+  const wizardReferNotes = state.referredServices.map(svc => {
+    const notes = (state.wizardAnswers[svc]?.referNotes || '').trim();
+    return notes ? `${svc}: ${notes}` : '';
+  }).filter(Boolean).join('\n');
+
+  const data = gatherLeadData();
+  data.Status = document.getElementById('r-status')?.value || 'Waiting Reply';
+  data['Chased Date'] = document.getElementById('r-chased')?.value || '';
+  data.Notes = joinNotes(
+    document.getElementById('f-notes')?.value,
+    wizardReferNotes,
+    document.getElementById('r-notes')?.value
+  );
+  data.Quote = state.referredServices.map(s => `Refer to Kieran — ${s}`).join('\n');
+  state.lead = data;
+
   await doSubmit();
   btn.innerHTML = 'Submit & Save';
   btn.disabled = false;
@@ -2153,10 +2301,24 @@ function clearForm() {
   if (qChased) qChased.value = '';
   const qNotes = document.getElementById('q-notes');
   if (qNotes) qNotes.value = '';
+  const rStatus = document.getElementById('r-status');
+  if (rStatus) {
+    if (!rStatus.querySelector('option')) {
+      rStatus.innerHTML = CEC_CONFIG.ALL_STATUSES.map(s =>
+        `<option value="${esc(s)}">${esc(s)}</option>`
+      ).join('');
+    }
+    rStatus.value = 'Waiting Reply';
+  }
+  const rChased = document.getElementById('r-chased');
+  if (rChased) rChased.value = '';
+  const rNotes = document.getElementById('r-notes');
+  if (rNotes) rNotes.value = '';
   state.lead = {};
   state.services = [];
   state.wizardAnswers = {};
   state.quoteLines = {};
+  state.referredServices = [];
 }
 
 function resetAndHome() {
