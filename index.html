@@ -1001,10 +1001,25 @@ function getStatusStyle(status) {
   return 'background:#f0efeb; color:#5f5e5a;';
 }
 
+// ---- Lead Hub key: stored on this device only, never in the code ----
+function getAppKey() {
+  let key = '';
+  try { key = localStorage.getItem('cecLeadHubKey') || ''; } catch(e) {}
+  if (!key) {
+    key = (prompt('Enter the Lead Hub key (from the Apps Script setup):') || '').trim();
+    if (key) { try { localStorage.setItem('cecLeadHubKey', key); } catch(e) {} }
+  }
+  return key;
+}
+function forgetAppKey() {
+  try { localStorage.removeItem('cecLeadHubKey'); } catch(e) {}
+}
+
 function getStatusSelectStyle(status) {
   const base = 'border:none; border-radius:20px; font-size:12px; font-weight:500; font-family:inherit; cursor:pointer; padding:3px 10px; width:100%;';
   if (!status) return base + 'background:#f0efeb; color:#5f5e5a;';
   const s = status.toLowerCase();
+  if (s === 'new')           return base + 'background:#e6f1fb; color:#0c447c;';
   if (s === 'quoted')        return base + 'background:#e1f5ee; color:#085041;';
   if (s === 'waiting reply') return base + 'background:#faeeda; color:#854f0b;';
   if (s === 'chased')        return base + 'background:#faeeda; color:#ba7517;';
@@ -1047,6 +1062,7 @@ async function updateLeadStatus(selectEl, sheetName, rowIndex) {
 
       const params = '?action=updateStatus&sheet=' + encodeURIComponent(sheetName) +
         '&row=' + rowIndex + '&status=' + encodeURIComponent(newStatus) +
+        '&key=' + encodeURIComponent(getAppKey()) +
         '&callback=' + callbackName + '&t=' + Date.now();
       script.src = url + params;
       script.onerror = function() { cleanup(); reject(new Error('Failed')); };
@@ -1101,6 +1117,7 @@ async function loadLeads() {
   try {
     const data = await fetchViaJsonp(url);
 
+    if (data.error === 'Unauthorised') { forgetAppKey(); throw new Error('Wrong or missing Lead Hub key. Refresh the page to enter it again.'); }
     if (data.error) throw new Error(data.error);
 
     const closed   = CEC_CONFIG.CLOSED_STATUSES.map(s => s.toLowerCase());
@@ -1169,7 +1186,7 @@ function fetchViaJsonp(url) {
       resolve(data);
     };
 
-    script.src = url + '?callback=' + callbackName + '&t=' + Date.now();
+    script.src = url + '?key=' + encodeURIComponent(getAppKey()) + '&callback=' + callbackName + '&t=' + Date.now();
     script.onerror = function() {
       cleanup();
       reject(new Error('Script load failed'));
@@ -2299,7 +2316,7 @@ async function doSubmit() {
     await fetch(url, {
       method: 'POST',
       redirect: 'follow',
-      body: JSON.stringify({ action: 'append', data: state.lead }),
+      body: JSON.stringify({ action: 'append', key: getAppKey(), data: state.lead }),
     });
     document.getElementById('success-msg').textContent =
       `Lead for ${state.lead.Name || 'client'} has been saved to Google Sheets.`;
