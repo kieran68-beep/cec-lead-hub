@@ -28,6 +28,7 @@ const CEC_CONFIG = {
   CLOSED_STATUSES: ["Booked in CM", "Lost", "Ignored", "Rejected See Notes"],
 
   ALL_STATUSES: [
+    "New",
     "Quoted",
     "Waiting Reply",
     "Chased",
